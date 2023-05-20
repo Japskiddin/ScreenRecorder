@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "ScreenRecorder"
 include(":sample")
+include(":screenrecorder")
