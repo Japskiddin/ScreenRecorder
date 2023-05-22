@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "io.github.japskiddin.screenrecorder"
+    namespace = "io.github.japskiddin.sample"
     compileSdk = 33
 
     defaultConfig {
-        applicationId = "io.github.japskiddin.screenrecorder"
+        applicationId = "io.github.japskiddin.screenrecorder.sample"
         minSdk = 19
         targetSdk = 33
         versionCode = 1
@@ -28,14 +28,15 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
 }
 
@@ -50,4 +51,5 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation(project(":screenrecorder"))
 }

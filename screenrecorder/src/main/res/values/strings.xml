@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="err_create_recordings_dir">Failed to create Recordings directory</string>
+    <string name="err_screen_record">Your device does not support screen record</string>
+    <string name="err_record_activity_not_found">Activity for record video not found</string>
+</resources>

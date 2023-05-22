@@ -1,4 +1,4 @@
-package io.github.japskiddin.screenrecorder
+package io.github.japskiddin.sample
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
