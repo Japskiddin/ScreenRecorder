@@ -12,9 +12,11 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
-import io.github.japskiddin.screenrecorder.ScreenRecorderService.Companion.EXTRA_RECORDER_CODE
-import io.github.japskiddin.screenrecorder.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
-import io.github.japskiddin.screenrecorder.ScreenRecorderService.LocalBinder
+import io.github.japskiddin.screenrecorder.contract.RecordVideo
+import io.github.japskiddin.screenrecorder.service.ScreenRecorderService
+import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_CODE
+import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
+import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.LocalBinder
 import java.lang.ref.WeakReference
 
 

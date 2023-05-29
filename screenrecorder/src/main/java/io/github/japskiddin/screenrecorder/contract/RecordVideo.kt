@@ -1,10 +1,10 @@
-package io.github.japskiddin.screenrecorder
+package io.github.japskiddin.screenrecorder.contract
 
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.activity.result.contract.ActivityResultContract
-import io.github.japskiddin.screenrecorder.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
+import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
 
 class RecordVideo : ActivityResultContract<Intent, Pair<Int, Intent?>>() {
     override fun createIntent(context: Context, input: Intent): Intent {

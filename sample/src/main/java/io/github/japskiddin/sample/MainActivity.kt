@@ -3,6 +3,7 @@ package io.github.japskiddin.sample
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -40,15 +41,15 @@ class MainActivity : AppCompatActivity() {
     private val listener: ScreenRecorder.ScreenRecorderListener =
         object : ScreenRecorder.ScreenRecorderListener {
             override fun onStarted() {
-                TODO("Not yet implemented")
+                Toast.makeText(applicationContext, "Recording started", Toast.LENGTH_SHORT).show()
             }
 
             override fun onStopped() {
-                TODO("Not yet implemented")
+                Toast.makeText(applicationContext, "Recording stopped", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCompleted(filepath: String?) {
-                TODO("Not yet implemented")
+                Toast.makeText(applicationContext, "Recording completed", Toast.LENGTH_SHORT).show()
             }
 
         }

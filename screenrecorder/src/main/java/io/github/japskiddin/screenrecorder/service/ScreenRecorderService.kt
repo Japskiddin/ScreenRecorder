@@ -1,4 +1,4 @@
-package io.github.japskiddin.screenrecorder
+package io.github.japskiddin.screenrecorder.service
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -18,9 +18,11 @@ import android.os.Build
 import android.os.IBinder
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.Surface
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import io.github.japskiddin.screenrecorder.BuildConfig
+import io.github.japskiddin.screenrecorder.R
+import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -52,7 +54,6 @@ class ScreenRecorderService : Service() {
     private var mediaRecorder: MediaRecorder? = null
     private var mediaProjectionManager: MediaProjectionManager? = null
     private var filePath: String? = null
-    private var surface: Surface? = null
     private var isRunning = false
 
     // Class used for the client Binder.
@@ -163,26 +164,33 @@ class ScreenRecorderService : Service() {
             ).show()
             return false
         }
-        surface = try {
+
+        val recordingInfo = getRecordingInfo(this)
+        val width = recordingInfo?.width ?: displayMetrics!!.widthPixels
+        val height = recordingInfo?.height ?: displayMetrics!!.heightPixels
+        try {
             mediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             mediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            mediaRecorder!!.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
             mediaRecorder!!.setOutputFile(filePath)
+            mediaRecorder!!.setVideoSize(width, height)
             mediaRecorder!!.setVideoEncodingBitRate(512 * 3000)
             mediaRecorder!!.setVideoFrameRate(30)
-            mediaRecorder!!.setVideoSize(
-                displayMetrics!!.widthPixels,
-                displayMetrics!!.heightPixels
-            )
-            mediaRecorder!!.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            // TODO добавить максимальный размер файла
             mediaRecorder!!.prepare()
-            mediaRecorder!!.surface
-        } catch (e: IllegalStateException) {
+        } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(applicationContext, R.string.err_screen_record, Toast.LENGTH_LONG).show()
-            return false
-        } catch (e: IOException) {
-            e.printStackTrace()
-            Toast.makeText(applicationContext, R.string.err_screen_record, Toast.LENGTH_LONG).show()
+            when (e) {
+                is IllegalStateException,
+                is IOException -> Toast.makeText(
+                    applicationContext,
+                    R.string.err_screen_record,
+                    Toast.LENGTH_LONG
+                ).show()
+
+                else -> Toast.makeText(applicationContext, R.string.err_unknown, Toast.LENGTH_LONG)
+                    .show()
+            }
             return false
         }
         return true
@@ -198,7 +206,7 @@ class ScreenRecorderService : Service() {
         return mediaProjection!!.createVirtualDisplay(
             this.javaClass.simpleName, width, height,
             screenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, surface, null, null
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mediaRecorder!!.surface, null, null
         )
     }
 
