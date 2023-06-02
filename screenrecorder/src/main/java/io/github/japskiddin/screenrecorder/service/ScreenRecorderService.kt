@@ -166,14 +166,12 @@ class ScreenRecorderService : Service() {
         }
 
         val recordingInfo = getRecordingInfo(this)
-        val width = recordingInfo?.width ?: displayMetrics!!.widthPixels
-        val height = recordingInfo?.height ?: displayMetrics!!.heightPixels
         try {
             mediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
             mediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             mediaRecorder!!.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
             mediaRecorder!!.setOutputFile(filePath)
-            mediaRecorder!!.setVideoSize(width, height)
+            mediaRecorder!!.setVideoSize(recordingInfo.width, recordingInfo.height)
             mediaRecorder!!.setVideoEncodingBitRate(512 * 3000)
             mediaRecorder!!.setVideoFrameRate(30)
             // TODO добавить максимальный размер файла

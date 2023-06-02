@@ -5,17 +5,29 @@ import android.content.Context.WINDOW_SERVICE
 import android.content.res.Configuration
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.media.CamcorderProfile
+import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import io.github.japskiddin.screenrecorder.model.RecordingInfo
 
 fun getRecordingInfo(context: Context): RecordingInfo {
-    val displayMetrics = DisplayMetrics()
     val wm = context.getSystemService(WINDOW_SERVICE) as WindowManager
-    wm.defaultDisplay.getRealMetrics(displayMetrics)
-    val displayWidth = displayMetrics.widthPixels
-    val displayHeight = displayMetrics.heightPixels
-    val displayDensity = displayMetrics.densityDpi
+    val displayWidth: Int
+    val displayHeight: Int
+    val displayDensity: Int
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val windowMetrics = wm.currentWindowMetrics
+        displayWidth = windowMetrics.bounds.width()
+        displayHeight = windowMetrics.bounds.height()
+        displayDensity = context.resources.configuration.densityDpi
+    } else {
+        val displayMetrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        wm.defaultDisplay.getRealMetrics(displayMetrics)
+        displayWidth = displayMetrics.widthPixels
+        displayHeight = displayMetrics.heightPixels
+        displayDensity = displayMetrics.densityDpi
+    }
     val configuration: Configuration = context.resources.configuration
     val isLandscape = configuration.orientation == ORIENTATION_LANDSCAPE
     val camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH)
