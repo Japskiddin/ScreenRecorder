@@ -46,32 +46,32 @@ class ScreenRecorder(
     }
 
     fun start() {
-        if (isRecording) {
+        val activity = weakReference.get()
+        if (activity == null) {
             if (serviceBound) {
                 screenRecorderService?.stopRecord()
             } else {
                 listener.onStopped()
             }
-        } else {
-            val activity = weakReference.get()
-            if (activity == null) {
-                if (serviceBound) {
-                    screenRecorderService?.stopRecord()
-                } else {
-                    listener.onStopped()
-                }
-                return
-            }
+            return
+        }
 
-            if (screenRecorderService == null) {
-                val intent = Intent(activity, ScreenRecorderService::class.java)
-                ContextCompat.startForegroundService(activity, intent)
-                // bind to Service
-                activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-            } else {
-                screenRecorderService?.startService()
-                screenRecorderService?.startRecord()
-            }
+        if (screenRecorderService == null) {
+            val intent = Intent(activity, ScreenRecorderService::class.java)
+            ContextCompat.startForegroundService(activity, intent)
+            // bind to Service
+            activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        } else {
+            screenRecorderService?.startService()
+            screenRecorderService?.startRecord()
+        }
+    }
+
+    fun stop() {
+        if (serviceBound) {
+            screenRecorderService?.stopRecord()
+        } else {
+            listener.onStopped()
         }
     }
 

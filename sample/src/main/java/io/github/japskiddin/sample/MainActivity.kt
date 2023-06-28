@@ -32,7 +32,11 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener {
-            screenRecorder.start()
+            if (screenRecorder.isRecording()) {
+                screenRecorder.stop()
+            } else {
+                screenRecorder.start()
+            }
         }
 
         screenRecorder = ScreenRecorder(WeakReference(this), listener)
