@@ -22,6 +22,7 @@ import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import io.github.japskiddin.screenrecorder.BuildConfig
 import io.github.japskiddin.screenrecorder.R
+import io.github.japskiddin.screenrecorder.interfaces.ServiceListener
 import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
 import io.github.japskiddin.screenrecorder.utils.getSysDate
 import java.io.File
@@ -29,13 +30,6 @@ import java.io.IOException
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class ScreenRecorderService : Service() {
-    interface ServiceListener {
-        fun onRecordStarted()
-        fun onRecordStopped(filepath: String?)
-        fun onStartActivity(intent: Intent?)
-        fun onServiceStopped()
-    }
-
     /*
     Binder given to clients
      */

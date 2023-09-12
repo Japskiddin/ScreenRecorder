@@ -13,6 +13,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import io.github.japskiddin.screenrecorder.contract.RecordVideo
+import io.github.japskiddin.screenrecorder.interfaces.ScreenRecorderListener
+import io.github.japskiddin.screenrecorder.interfaces.ServiceListener
 import io.github.japskiddin.screenrecorder.model.RecordVideoResult
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_CODE
@@ -24,13 +26,10 @@ import java.lang.ref.WeakReference
 class ScreenRecorder(
     private val weakReference: WeakReference<Activity>,
     private val listener: ScreenRecorderListener
-) :
-    DefaultLifecycleObserver {
-    interface ScreenRecorderListener {
-        fun onStarted()
-        fun onStopped()
-        fun onCompleted(filepath: String?)
-    }
+) : DefaultLifecycleObserver {
+    // TODO: Сделать по паттерну Билдер?
+    // TODO: Добавить переводы строк
+    // TODO: Добавить обработку поворота экрана
 
     private var isRecording = false
     private var serviceBound = false
@@ -108,42 +107,41 @@ class ScreenRecorder(
         }
     }
 
-    private val serviceListener: ScreenRecorderService.ServiceListener =
-        object : ScreenRecorderService.ServiceListener {
-            override fun onRecordStarted() {
-                isRecording = true
-                listener.onStarted()
-            }
-
-            override fun onRecordStopped(filepath: String?) {
-                isRecording = false
-                val activity = weakReference.get() ?: return
-                if (!activity.isFinishing) {
-                    listener.onStopped()
-                    listener.onCompleted(filepath)
-                    screenRecorderService?.stopService()
-                }
-            }
-
-            override fun onStartActivity(intent: Intent?) {
-                try {
-                    recordVideoLauncher?.launch(intent)
-                } catch (e: ActivityNotFoundException) {
-                    e.printStackTrace()
-                    Toast.makeText(
-                        weakReference.get()?.applicationContext,
-                        R.string.err_record_activity_not_found,
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            }
-
-            override fun onServiceStopped() {
-                screenRecorderService?.setListener(null) // unregister
-                serviceBound = false
-                screenRecorderService = null
-                weakReference.get()?.unbindService(serviceConnection)
-            }
-
+    private val serviceListener: ServiceListener = object : ServiceListener {
+        override fun onRecordStarted() {
+            isRecording = true
+            listener.onStarted()
         }
+
+        override fun onRecordStopped(filepath: String?) {
+            isRecording = false
+            val activity = weakReference.get() ?: return
+            if (!activity.isFinishing) {
+                listener.onStopped()
+                listener.onCompleted(filepath)
+                screenRecorderService?.stopService()
+            }
+        }
+
+        override fun onStartActivity(intent: Intent?) {
+            try {
+                recordVideoLauncher?.launch(intent)
+            } catch (e: ActivityNotFoundException) {
+                e.printStackTrace()
+                Toast.makeText(
+                    weakReference.get()?.applicationContext,
+                    R.string.err_record_activity_not_found,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+
+        override fun onServiceStopped() {
+            screenRecorderService?.setListener(null) // unregister
+            serviceBound = false
+            screenRecorderService = null
+            weakReference.get()?.unbindService(serviceConnection)
+        }
+
+    }
 }

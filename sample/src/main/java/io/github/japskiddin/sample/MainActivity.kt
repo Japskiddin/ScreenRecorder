@@ -11,6 +11,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import io.github.japskiddin.sample.databinding.ActivityMainBinding
 import io.github.japskiddin.screenrecorder.ScreenRecorder
+import io.github.japskiddin.screenrecorder.interfaces.ScreenRecorderListener
 import java.lang.ref.WeakReference
 
 class MainActivity : AppCompatActivity() {
@@ -42,21 +43,20 @@ class MainActivity : AppCompatActivity() {
         screenRecorder = ScreenRecorder(WeakReference(this), listener)
     }
 
-    private val listener: ScreenRecorder.ScreenRecorderListener =
-        object : ScreenRecorder.ScreenRecorderListener {
-            override fun onStarted() {
-                Toast.makeText(applicationContext, "Recording started", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onStopped() {
-                Toast.makeText(applicationContext, "Recording stopped", Toast.LENGTH_SHORT).show()
-            }
-
-            override fun onCompleted(filepath: String?) {
-                Toast.makeText(applicationContext, "Recording completed", Toast.LENGTH_SHORT).show()
-            }
-
+    private val listener: ScreenRecorderListener = object : ScreenRecorderListener {
+        override fun onStarted() {
+            Toast.makeText(applicationContext, "Recording started", Toast.LENGTH_SHORT).show()
         }
+
+        override fun onStopped() {
+            Toast.makeText(applicationContext, "Recording stopped", Toast.LENGTH_SHORT).show()
+        }
+
+        override fun onCompleted(filepath: String?) {
+            Toast.makeText(applicationContext, "Recording completed", Toast.LENGTH_SHORT).show()
+        }
+
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
