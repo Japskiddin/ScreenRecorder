@@ -79,6 +79,13 @@ class ScreenRecorder(
         return isRecording
     }
 
+    private fun releaseService(connection: ServiceConnection) {
+        serviceBound = false
+        screenRecorderService?.setListener(null)
+        screenRecorderService = null
+        weakReference.get()?.unbindService(connection)
+    }
+
     private fun parseRecordIntent(result: RecordVideoResult) {
         val intent = Intent(weakReference.get(), ScreenRecorderService::class.java)
         intent.putExtra(EXTRA_RECORDER_CODE, result.code)
@@ -93,17 +100,14 @@ class ScreenRecorder(
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             val binder = service as LocalBinder
             screenRecorderService = binder.service
-            screenRecorderService?.setListener(serviceListener) // register
+            screenRecorderService?.setListener(serviceListener)
             screenRecorderService?.startService()
             screenRecorderService?.startRecord()
             serviceBound = true
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            screenRecorderService?.setListener(null) // unregister
-            serviceBound = false
-            screenRecorderService = null
-            weakReference.get()?.unbindService(this)
+            releaseService(this)
         }
     }
 
@@ -127,7 +131,6 @@ class ScreenRecorder(
             try {
                 recordVideoLauncher?.launch(intent)
             } catch (e: ActivityNotFoundException) {
-                e.printStackTrace()
                 Toast.makeText(
                     weakReference.get()?.applicationContext,
                     R.string.err_record_activity_not_found,
@@ -137,11 +140,7 @@ class ScreenRecorder(
         }
 
         override fun onServiceStopped() {
-            screenRecorderService?.setListener(null) // unregister
-            serviceBound = false
-            screenRecorderService = null
-            weakReference.get()?.unbindService(serviceConnection)
+            releaseService(serviceConnection)
         }
-
     }
 }

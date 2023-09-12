@@ -15,7 +15,6 @@ import io.github.japskiddin.screenrecorder.interfaces.ScreenRecorderListener
 import java.lang.ref.WeakReference
 
 class MainActivity : AppCompatActivity() {
-
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var screenRecorder: ScreenRecorder
