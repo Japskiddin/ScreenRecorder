@@ -16,7 +16,6 @@ import android.media.projection.MediaProjectionManager
 import android.os.Binder
 import android.os.Build
 import android.os.IBinder
-import android.util.DisplayMetrics
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
@@ -30,21 +29,21 @@ import java.io.IOException
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class ScreenRecorderService : Service() {
-    /*
-    Binder given to clients
+    private lateinit var mediaRecorder: MediaRecorder
+    private lateinit var mediaProjectionManager: MediaProjectionManager
+
+    /**
+     * Binder given to clients
      */
     private val binder: IBinder = LocalBinder()
 
-    /*
-    Registered callbacks
+    /**
+     * Registered callbacks
      */
     private var serviceListener: ServiceListener? = null
 
-    private var displayMetrics: DisplayMetrics? = null
     private var mediaProjection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
-    private var mediaRecorder: MediaRecorder? = null
-    private var mediaProjectionManager: MediaProjectionManager? = null
     private var filePath: String? = null
     private var isRunning = false
 
@@ -56,12 +55,11 @@ class ScreenRecorderService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate");
+        if (BuildConfig.DEBUG) Log.d(TAG, "onCreate")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             createNotificationChannel()
         }
         createNotification()
-        displayMetrics = resources.displayMetrics
         mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             MediaRecorder(this)
         } else {
@@ -74,12 +72,12 @@ class ScreenRecorderService : Service() {
     }
 
     override fun onBind(intent: Intent): IBinder {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onBind");
+        if (BuildConfig.DEBUG) Log.d(TAG, "onBind")
         return binder
     }
 
     override fun onUnbind(intent: Intent): Boolean {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind");
+        if (BuildConfig.DEBUG) Log.d(TAG, "onUnbind")
         return true
     }
 
@@ -92,15 +90,15 @@ class ScreenRecorderService : Service() {
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        if (BuildConfig.DEBUG) Log.d(TAG, "onStartCommand | " + intent.getAction());
+        if (BuildConfig.DEBUG) Log.d(TAG, "onStartCommand | " + intent.action)
         return START_NOT_STICKY
     }
 
     private fun onStopService() {
-        if (BuildConfig.DEBUG) Log.d(TAG, "OnStopService");
+        if (BuildConfig.DEBUG) Log.d(TAG, "OnStopService")
         isRunning = false
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (BuildConfig.DEBUG) Log.d(TAG, "stopForeground");
+            if (BuildConfig.DEBUG) Log.d(TAG, "stopForeground")
             stopForeground(STOP_FOREGROUND_REMOVE)
         }
         stopSelf()
@@ -111,7 +109,7 @@ class ScreenRecorderService : Service() {
 
     override fun onDestroy() {
         release()
-        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy");
+        if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy")
         super.onDestroy()
     }
 
@@ -121,7 +119,7 @@ class ScreenRecorderService : Service() {
             .setSmallIcon(R.drawable.ic_videocam)
             .build()
 
-        if (BuildConfig.DEBUG) Log.d(TAG, "startForeground");
+        if (BuildConfig.DEBUG) Log.d(TAG, "startForeground")
         startForeground(101, notification)
     }
 
@@ -159,17 +157,17 @@ class ScreenRecorderService : Service() {
 
         val recordingInfo = getRecordingInfo(this)
         try {
-            mediaRecorder!!.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            mediaRecorder!!.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            mediaRecorder!!.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            mediaRecorder!!.setOutputFile(filePath)
-            mediaRecorder!!.setVideoSize(recordingInfo.width, recordingInfo.height)
-            mediaRecorder!!.setVideoEncodingBitRate(512 * 3000)
-            mediaRecorder!!.setVideoFrameRate(30)
+            mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            mediaRecorder.setOutputFile(filePath)
+            mediaRecorder.setVideoSize(recordingInfo.width, recordingInfo.height)
+            mediaRecorder.setVideoEncodingBitRate(512 * 3000)
+            mediaRecorder.setVideoFrameRate(30)
             // TODO добавить максимальный размер файла
-            mediaRecorder!!.prepare()
+            mediaRecorder.prepare()
         } catch (e: Exception) {
-            e.printStackTrace()
+            if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
             when (e) {
                 is IllegalStateException,
                 is IOException -> Toast.makeText(
@@ -186,33 +184,41 @@ class ScreenRecorderService : Service() {
         return true
     }
 
-    private fun getVirtualDisplay(): VirtualDisplay {
+    private fun getVirtualDisplay(): VirtualDisplay? {
+        val displayMetrics = resources.displayMetrics
         val screenDensity = displayMetrics!!.densityDpi
-        val width = displayMetrics!!.widthPixels
-        val height = displayMetrics!!.heightPixels
-        return mediaProjection!!.createVirtualDisplay(
-            this.javaClass.simpleName, width, height,
+        val width = displayMetrics.widthPixels
+        val height = displayMetrics.heightPixels
+        return mediaProjection?.createVirtualDisplay(
+            this.javaClass.simpleName,
+            width,
+            height,
             screenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR, mediaRecorder!!.surface, null, null
+            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
+            mediaRecorder.surface,
+            null,
+            null
         )
     }
 
-    fun stopRecord() {
+    private fun reset() {
         try {
-            if (mediaRecorder != null) {
-                mediaRecorder!!.stop()
-                mediaRecorder!!.reset()
-            }
-            if (virtualDisplay != null) {
-                virtualDisplay!!.release()
-            }
-            if (mediaProjection != null) {
-                mediaProjection!!.stop()
-                mediaProjection = null
-            }
+            mediaRecorder.stop()
+            mediaRecorder.reset()
+            virtualDisplay?.release()
+            mediaProjection?.stop()
+            mediaProjection = null
         } catch (e: RuntimeException) {
-            e.printStackTrace()
+            if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
         }
+    }
+
+    private fun release() {
+        mediaRecorder.release()
+    }
+
+    fun stopRecord() {
+        reset()
         if (serviceListener != null) {
             serviceListener!!.onRecordStopped(filePath)
         }
@@ -224,13 +230,13 @@ class ScreenRecorderService : Service() {
                 val intent = Intent()
                 intent.putExtra(
                     EXTRA_RECORDER_DATA,
-                    mediaProjectionManager!!.createScreenCaptureIntent()
+                    mediaProjectionManager.createScreenCaptureIntent()
                 )
                 if (serviceListener != null) {
                     serviceListener!!.onStartActivity(intent)
                 }
             } catch (e: ActivityNotFoundException) {
-                e.printStackTrace()
+                if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
                 Toast.makeText(applicationContext, R.string.err_screen_record, Toast.LENGTH_LONG)
                     .show()
             }
@@ -239,10 +245,15 @@ class ScreenRecorderService : Service() {
         val prepared = prepare()
         if (prepared) {
             virtualDisplay = getVirtualDisplay()
+            if (virtualDisplay == null) {
+                onStopService()
+                return
+            }
+
             try {
-                mediaRecorder!!.start()
+                mediaRecorder.start()
             } catch (e: IllegalStateException) {
-                e.printStackTrace()
+                if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
                 onStopService()
                 return
             }
@@ -250,27 +261,8 @@ class ScreenRecorderService : Service() {
                 serviceListener!!.onRecordStarted()
             }
         } else {
-            try {
-                if (mediaRecorder != null) {
-                    mediaRecorder!!.reset()
-                }
-                if (virtualDisplay != null) {
-                    virtualDisplay!!.release()
-                }
-                if (mediaProjection != null) {
-                    mediaProjection!!.stop()
-                    mediaProjection = null
-                }
-            } catch (e: IllegalStateException) {
-                e.printStackTrace()
-            }
+            reset()
             onStopService()
-        }
-    }
-
-    fun release() {
-        if (mediaRecorder != null) {
-            mediaRecorder!!.release()
         }
     }
 
@@ -299,7 +291,7 @@ class ScreenRecorderService : Service() {
             onStopService()
         } else {
             if (data != null) {
-                mediaProjection = mediaProjectionManager!!.getMediaProjection(
+                mediaProjection = mediaProjectionManager.getMediaProjection(
                     code,
                     data
                 )

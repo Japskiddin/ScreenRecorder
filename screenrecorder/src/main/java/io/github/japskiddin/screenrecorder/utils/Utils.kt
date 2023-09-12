@@ -13,6 +13,10 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+fun isNotLolipop(): Boolean {
+    return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP
+}
+
 fun getSysDate(): String {
     return SimpleDateFormat("MM-dd_HH-mm", Locale.getDefault()).format(Date())
 }

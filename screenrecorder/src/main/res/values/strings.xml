@@ -3,5 +3,6 @@
     <string name="err_create_recordings_dir">Failed to create Recordings directory</string>
     <string name="err_screen_record">Your device does not support screen record</string>
     <string name="err_record_activity_not_found">Activity for record video not found</string>
+    <string name="err_not_lolipop">Android API level below 21</string>
     <string name="err_unknown">Unknown error</string>
 </resources>

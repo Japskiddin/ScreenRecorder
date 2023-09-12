@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,7 @@ import io.github.japskiddin.screenrecorder.service.ScreenRecorderService
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_CODE
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.LocalBinder
+import io.github.japskiddin.screenrecorder.utils.isNotLolipop
 import java.lang.ref.WeakReference
 
 
@@ -53,6 +55,15 @@ class ScreenRecorder(
             } else {
                 listener.onStopped()
             }
+            return
+        }
+
+        if (isNotLolipop()) {
+            Toast.makeText(
+                activity.applicationContext,
+                R.string.err_not_lolipop,
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
@@ -131,6 +142,7 @@ class ScreenRecorder(
             try {
                 recordVideoLauncher?.launch(intent)
             } catch (e: ActivityNotFoundException) {
+                if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
                 Toast.makeText(
                     weakReference.get()?.applicationContext,
                     R.string.err_record_activity_not_found,
@@ -142,5 +154,9 @@ class ScreenRecorder(
         override fun onServiceStopped() {
             releaseService(serviceConnection)
         }
+    }
+
+    companion object {
+        private val TAG = ScreenRecorder::class.java.simpleName
     }
 }
