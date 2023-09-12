@@ -23,11 +23,9 @@ import androidx.core.app.NotificationCompat
 import io.github.japskiddin.screenrecorder.BuildConfig
 import io.github.japskiddin.screenrecorder.R
 import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
+import io.github.japskiddin.screenrecorder.utils.getSysDate
 import java.io.File
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class ScreenRecorderService : Service() {
@@ -154,7 +152,7 @@ class ScreenRecorderService : Service() {
             success = folder.mkdir()
         }
         filePath = if (success) {
-            val videoName = "video_$curSysDate.mp4"
+            val videoName = "video_${getSysDate()}.mp4"
             directory + File.separator + videoName
         } else {
             Toast.makeText(
@@ -193,9 +191,6 @@ class ScreenRecorderService : Service() {
         }
         return true
     }
-
-    private val curSysDate: String
-        get() = SimpleDateFormat("MM-dd_HH-mm", Locale.getDefault()).format(Date())
 
     private fun getVirtualDisplay(): VirtualDisplay {
         val screenDensity = displayMetrics!!.densityDpi

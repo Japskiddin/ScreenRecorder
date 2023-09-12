@@ -9,6 +9,13 @@ import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import io.github.japskiddin.screenrecorder.model.RecordingInfo
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+fun getSysDate(): String {
+    return SimpleDateFormat("MM-dd_HH-mm", Locale.getDefault()).format(Date())
+}
 
 fun getRecordingInfo(context: Context): RecordingInfo {
     val wm = context.getSystemService(WINDOW_SERVICE) as WindowManager

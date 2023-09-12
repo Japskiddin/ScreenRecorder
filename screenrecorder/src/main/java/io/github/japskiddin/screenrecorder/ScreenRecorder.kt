@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import io.github.japskiddin.screenrecorder.contract.RecordVideo
+import io.github.japskiddin.screenrecorder.model.RecordVideoResult
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_CODE
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
@@ -79,12 +80,10 @@ class ScreenRecorder(
         return isRecording
     }
 
-    private fun parseRecordIntent(result: Pair<Int, Intent?>) {
-        val resultCode = result.first
-        val data = result.second
+    private fun parseRecordIntent(result: RecordVideoResult) {
         val intent = Intent(weakReference.get(), ScreenRecorderService::class.java)
-        intent.putExtra(EXTRA_RECORDER_CODE, resultCode)
-        intent.putExtra(EXTRA_RECORDER_DATA, data)
+        intent.putExtra(EXTRA_RECORDER_CODE, result.code)
+        intent.putExtra(EXTRA_RECORDER_DATA, result.intent)
         screenRecorderService?.parseIntent(intent)
     }
 
