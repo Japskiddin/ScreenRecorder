@@ -1,22 +1,55 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinAndroid)
+    id("com.android.library")
+    kotlin("android")
 }
 
 android {
     namespace = "io.github.japskiddin.screenrecorder"
-    compileSdk = 33
+    buildToolsVersion = AppConfig.buildToolsVersion
+    compileSdk = AppConfig.compileSdk
 
     defaultConfig {
-        minSdk = 19
+        minSdk = AppConfig.minSdk
+        vectorDrawables {
+            useSupportLibrary = true
+        }
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
+    packaging {
+        jniLibs {
+            excludes += listOf(
+                "**/kotlin/**",
+                "META-INF/androidx.*",
+                "META-INF/proguard/androidx-*"
+            )
+        }
+        resources {
+            excludes += listOf(
+                "/META-INF/*.kotlin_module",
+                "**/kotlin/**",
+                "**/*.txt",
+                "**/*.xml",
+                "**/*.properties",
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0",
+                "META-INF/*.version",
+                "META-INF/androidx.*",
+                "META-INF/proguard/androidx-*"
+            )
+        }
+    }
+
     buildTypes {
-        release {
+        val release by getting {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -24,14 +57,18 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+
     buildFeatures {
+        viewBinding = true
         buildConfig = true
     }
 }

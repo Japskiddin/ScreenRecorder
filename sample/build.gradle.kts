@@ -1,39 +1,45 @@
-@Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.kotlinAndroid)
+    id("com.android.application")
+    kotlin("android")
 }
 
 android {
     namespace = "io.github.japskiddin.sample"
-    compileSdk = 33
+    buildToolsVersion = AppConfig.buildToolsVersion
+    compileSdk = AppConfig.compileSdk
 
     defaultConfig {
         applicationId = "io.github.japskiddin.screenrecorder.sample"
-        minSdk = 19
-        targetSdk = 33
-        versionCode = 1
-        versionName = "1.0"
-
+        minSdk = AppConfig.minSdk
+        targetSdk = AppConfig.targetSdk
+        versionCode = AppConfig.versionCode
+        versionName = AppConfig.versionName
+        vectorDrawables {
+            useSupportLibrary = true
+        }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        val release by getting {
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_17.toString()
     }
+
     buildFeatures {
         viewBinding = true
         buildConfig = true
@@ -41,7 +47,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.core.ktx)
     implementation(libs.appcompat)
     implementation(libs.material)
