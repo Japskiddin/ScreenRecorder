@@ -53,25 +53,23 @@ class ScreenRecorder(
     }
 
     fun start() {
-        val activity = weakActivity.get()
-        if (activity == null) {
-            if (isServiceBound) {
-                screenRecorderService?.stopRecord()
-            } else {
-                listener.onStopped()
+        if (isNotLolipop()) {
+            weakActivity.get()?.let {
+                showToast(it, R.string.err_not_lolipop)
             }
             return
         }
 
-        if (isNotLolipop()) {
-            showToast(activity, R.string.err_not_lolipop)
-            return
+        if (isRecording) {
+            stop()
         }
 
         if (screenRecorderService == null) {
-            val intent = Intent(activity, ScreenRecorderService::class.java)
-            ContextCompat.startForegroundService(activity, intent)
-            activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+            weakActivity.get()?.let {
+                val intent = Intent(it, ScreenRecorderService::class.java)
+                ContextCompat.startForegroundService(it, intent)
+                it.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+            }
         } else {
             screenRecorderService?.startService()
             screenRecorderService?.startRecord()
@@ -90,11 +88,11 @@ class ScreenRecorder(
         return isRecording
     }
 
-    private fun releaseService(connection: ServiceConnection) {
+    private fun releaseService() {
         isServiceBound = false
         screenRecorderService?.setListener(null)
         screenRecorderService = null
-        weakActivity.get()?.unbindService(connection)
+        weakActivity.get()?.unbindService(serviceConnection)
     }
 
     private fun parseRecordIntent(result: RecordVideoResult) {
@@ -119,7 +117,7 @@ class ScreenRecorder(
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
-            releaseService(this)
+            releaseService()
         }
     }
 
@@ -143,12 +141,14 @@ class ScreenRecorder(
                 recordVideoLauncher?.launch(intent)
             } catch (e: ActivityNotFoundException) {
                 if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
-                showToast(activity, R.string.err_record_activity_not_found)
+                weakActivity.get()?.let {
+                    showToast(it, R.string.err_record_activity_not_found)
+                }
             }
         }
 
         override fun onServiceStopped() {
-            releaseService(serviceConnection)
+            releaseService()
         }
     }
 
