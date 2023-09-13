@@ -12,7 +12,6 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import io.github.japskiddin.sample.databinding.ActivityMainBinding
 import io.github.japskiddin.screenrecorder.ScreenRecorder
 import io.github.japskiddin.screenrecorder.interfaces.ScreenRecorderListener
-import java.lang.ref.WeakReference
 
 class MainActivity : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
@@ -39,7 +38,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        screenRecorder = ScreenRecorder(WeakReference(this), listener)
+        screenRecorder = ScreenRecorder(this, listener)
     }
 
     private val listener: ScreenRecorderListener = object : ScreenRecorderListener {

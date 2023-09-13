@@ -8,10 +8,16 @@ import android.media.CamcorderProfile
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import android.widget.Toast
+import androidx.annotation.StringRes
 import io.github.japskiddin.screenrecorder.model.RecordingInfo
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
+fun showToast(context: Context, @StringRes message: Int) {
+    Toast.makeText(context.applicationContext, message, Toast.LENGTH_LONG).show()
+}
 
 fun isNotLolipop(): Boolean {
     return Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP

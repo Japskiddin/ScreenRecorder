@@ -8,11 +8,9 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.DefaultLifecycleObserver
 import io.github.japskiddin.screenrecorder.contract.RecordVideo
 import io.github.japskiddin.screenrecorder.interfaces.ScreenRecorderListener
 import io.github.japskiddin.screenrecorder.interfaces.ServiceListener
@@ -22,35 +20,42 @@ import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Compani
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.LocalBinder
 import io.github.japskiddin.screenrecorder.utils.isNotLolipop
+import io.github.japskiddin.screenrecorder.utils.showToast
 import java.lang.ref.WeakReference
 
+// TODO: Сделать по паттерну Билдер?
+// TODO: Добавить переводы строк
+// TODO: Добавить обработку поворота экрана
 
 class ScreenRecorder(
-    private val weakReference: WeakReference<Activity>,
+    activity: Activity,
+    listener: ScreenRecorderListener
+) {
+    private val weakActivity: WeakReference<Activity>
     private val listener: ScreenRecorderListener
-) : DefaultLifecycleObserver {
-    // TODO: Сделать по паттерну Билдер?
-    // TODO: Добавить переводы строк
-    // TODO: Добавить обработку поворота экрана
 
     private var isRecording = false
-    private var serviceBound = false
+    private var isServiceBound = false
+    private var isRecordClicked = false
     private var screenRecorderService: ScreenRecorderService? = null
     private var recordVideoLauncher: ActivityResultLauncher<Intent>? = null
 
     init {
-        val activity = weakReference.get()
         if (activity is AppCompatActivity) {
+            weakActivity = WeakReference(activity)
             recordVideoLauncher = activity.registerForActivityResult(RecordVideo()) { result ->
                 parseRecordIntent(result)
             }
+        } else {
+            throw ClassCastException("AppCompatActivity requires.")
         }
+        this.listener = listener
     }
 
     fun start() {
-        val activity = weakReference.get()
+        val activity = weakActivity.get()
         if (activity == null) {
-            if (serviceBound) {
+            if (isServiceBound) {
                 screenRecorderService?.stopRecord()
             } else {
                 listener.onStopped()
@@ -59,18 +64,13 @@ class ScreenRecorder(
         }
 
         if (isNotLolipop()) {
-            Toast.makeText(
-                activity.applicationContext,
-                R.string.err_not_lolipop,
-                Toast.LENGTH_SHORT
-            ).show()
+            showToast(activity, R.string.err_not_lolipop)
             return
         }
 
         if (screenRecorderService == null) {
             val intent = Intent(activity, ScreenRecorderService::class.java)
             ContextCompat.startForegroundService(activity, intent)
-            // bind to Service
             activity.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
         } else {
             screenRecorderService?.startService()
@@ -79,7 +79,7 @@ class ScreenRecorder(
     }
 
     fun stop() {
-        if (serviceBound) {
+        if (isServiceBound) {
             screenRecorderService?.stopRecord()
         } else {
             listener.onStopped()
@@ -91,17 +91,18 @@ class ScreenRecorder(
     }
 
     private fun releaseService(connection: ServiceConnection) {
-        serviceBound = false
+        isServiceBound = false
         screenRecorderService?.setListener(null)
         screenRecorderService = null
-        weakReference.get()?.unbindService(connection)
+        weakActivity.get()?.unbindService(connection)
     }
 
     private fun parseRecordIntent(result: RecordVideoResult) {
-        val intent = Intent(weakReference.get(), ScreenRecorderService::class.java)
+        val intent = Intent(weakActivity.get(), ScreenRecorderService::class.java)
         intent.putExtra(EXTRA_RECORDER_CODE, result.code)
         intent.putExtra(EXTRA_RECORDER_DATA, result.intent)
         screenRecorderService?.parseIntent(intent)
+        isRecordClicked = false
     }
 
     /**
@@ -114,7 +115,7 @@ class ScreenRecorder(
             screenRecorderService?.setListener(serviceListener)
             screenRecorderService?.startService()
             screenRecorderService?.startRecord()
-            serviceBound = true
+            isServiceBound = true
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -130,7 +131,7 @@ class ScreenRecorder(
 
         override fun onRecordStopped(filepath: String?) {
             isRecording = false
-            val activity = weakReference.get() ?: return
+            val activity = weakActivity.get() ?: return
             if (!activity.isFinishing) {
                 listener.onStopped()
                 listener.onCompleted(filepath)
@@ -139,15 +140,13 @@ class ScreenRecorder(
         }
 
         override fun onStartActivity(intent: Intent?) {
+            if (isRecordClicked || intent == null) return
+            isRecordClicked = true
             try {
                 recordVideoLauncher?.launch(intent)
             } catch (e: ActivityNotFoundException) {
                 if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
-                Toast.makeText(
-                    weakReference.get()?.applicationContext,
-                    R.string.err_record_activity_not_found,
-                    Toast.LENGTH_LONG
-                ).show()
+                showToast(activity, R.string.err_record_activity_not_found)
             }
         }
 
