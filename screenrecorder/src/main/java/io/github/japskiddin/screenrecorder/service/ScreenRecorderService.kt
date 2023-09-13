@@ -17,13 +17,13 @@ import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import io.github.japskiddin.screenrecorder.BuildConfig
 import io.github.japskiddin.screenrecorder.R
 import io.github.japskiddin.screenrecorder.interfaces.ServiceListener
 import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
 import io.github.japskiddin.screenrecorder.utils.getSysDate
+import io.github.japskiddin.screenrecorder.utils.showToast
 import java.io.File
 import java.io.IOException
 
@@ -147,11 +147,7 @@ class ScreenRecorderService : Service() {
             val videoName = "video_${getSysDate()}.mp4"
             directory + File.separator + videoName
         } else {
-            Toast.makeText(
-                applicationContext,
-                R.string.err_create_recordings_dir,
-                Toast.LENGTH_LONG
-            ).show()
+            showToast(applicationContext, R.string.err_create_recordings_dir)
             return false
         }
 
@@ -170,14 +166,9 @@ class ScreenRecorderService : Service() {
             if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
             when (e) {
                 is IllegalStateException,
-                is IOException -> Toast.makeText(
-                    applicationContext,
-                    R.string.err_screen_record,
-                    Toast.LENGTH_LONG
-                ).show()
+                is IOException -> showToast(applicationContext, R.string.err_screen_record)
 
-                else -> Toast.makeText(applicationContext, R.string.err_unknown, Toast.LENGTH_LONG)
-                    .show()
+                else -> showToast(applicationContext, R.string.err_unknown)
             }
             return false
         }
@@ -237,8 +228,7 @@ class ScreenRecorderService : Service() {
                 }
             } catch (e: ActivityNotFoundException) {
                 if (BuildConfig.DEBUG) Log.e(TAG, e.message.toString())
-                Toast.makeText(applicationContext, R.string.err_screen_record, Toast.LENGTH_LONG)
-                    .show()
+                showToast(applicationContext, R.string.err_screen_record)
             }
             return
         }

@@ -31,7 +31,7 @@ class ScreenRecorder(
     activity: Activity,
     listener: ScreenRecorderListener
 ) {
-    private val weakActivity: WeakReference<Activity>
+    private val weakActivity: WeakReference<AppCompatActivity>
     private val listener: ScreenRecorderListener
 
     private var isRecording = false
