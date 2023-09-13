@@ -131,12 +131,9 @@ class ScreenRecorder(
 
         override fun onRecordStopped(filepath: String?) {
             isRecording = false
-            val activity = weakActivity.get() ?: return
-            if (!activity.isFinishing) {
-                listener.onStopped()
-                listener.onCompleted(filepath)
-                screenRecorderService?.stopService()
-            }
+            listener.onStopped()
+            listener.onCompleted(filepath)
+            screenRecorderService?.stopService()
         }
 
         override fun onStartActivity(intent: Intent?) {

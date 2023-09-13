@@ -53,7 +53,6 @@ class MainActivity : AppCompatActivity() {
         override fun onCompleted(filepath: String?) {
             Toast.makeText(applicationContext, "Recording completed", Toast.LENGTH_SHORT).show()
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
