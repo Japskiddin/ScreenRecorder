@@ -1,11 +1,13 @@
 package io.github.japskiddin.screenrecorder
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
@@ -25,7 +27,7 @@ import java.lang.ref.WeakReference
 
 // TODO: Сделать по паттерну Билдер?
 // TODO: Добавить переводы строк
-// TODO: Добавить обработку поворота экрана
+// TODO: добавить паузу?
 
 class ScreenRecorder(
     activity: Activity,
@@ -65,14 +67,12 @@ class ScreenRecorder(
         }
 
         if (screenRecorderService == null) {
-            weakActivity.get()?.let {
-                val intent = Intent(it, ScreenRecorderService::class.java)
-                ContextCompat.startForegroundService(it, intent)
-                it.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-            }
+            bindService(Context.BIND_AUTO_CREATE)
         } else {
             screenRecorderService?.startService()
-            screenRecorderService?.startRecord()
+            if (!isRecording) {
+                screenRecorderService?.startRecord()
+            }
         }
     }
 
@@ -84,8 +84,37 @@ class ScreenRecorder(
         }
     }
 
+    fun saveState(outState: Bundle) {
+        outState.putBoolean(EXTRA_IS_RECORD_RUNNING, isRecording)
+    }
+
+    fun restoreState(savedInstanceState: Bundle?) {
+        isRecording = savedInstanceState?.getBoolean(EXTRA_IS_RECORD_RUNNING, false) ?: false
+        if (!isRecording) return
+        var isServiceAlive = false
+        val manager =
+            weakActivity.get()?.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
+            if (ScreenRecorderService::class.java.name.equals(service.service.className)) {
+                isServiceAlive = true
+                break
+            }
+        }
+        if (!isServiceAlive) return
+        listener.onRestored()
+        bindService(0)
+    }
+
     fun isRecording(): Boolean {
         return isRecording
+    }
+
+    private fun bindService(flag: Int) {
+        weakActivity.get()?.let {
+            val intent = Intent(it, ScreenRecorderService::class.java)
+            ContextCompat.startForegroundService(it, intent)
+            it.bindService(intent, serviceConnection, flag)
+        }
     }
 
     private fun releaseService() {
@@ -112,7 +141,9 @@ class ScreenRecorder(
             screenRecorderService = binder.service
             screenRecorderService?.setListener(serviceListener)
             screenRecorderService?.startService()
-            screenRecorderService?.startRecord()
+            if (!isRecording) {
+                screenRecorderService?.startRecord()
+            }
             isServiceBound = true
         }
 
@@ -154,5 +185,6 @@ class ScreenRecorder(
 
     companion object {
         private val TAG = ScreenRecorder::class.java.simpleName
+        private const val EXTRA_IS_RECORD_RUNNING = "EXTRA_IS_RECORD_RUNNING"
     }
 }

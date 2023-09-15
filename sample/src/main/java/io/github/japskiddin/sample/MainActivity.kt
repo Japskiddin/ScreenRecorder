@@ -39,6 +39,12 @@ class MainActivity : AppCompatActivity() {
         }
 
         screenRecorder = ScreenRecorder(this, listener)
+        screenRecorder.restoreState(savedInstanceState)
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        screenRecorder.saveState(outState)
+        super.onSaveInstanceState(outState)
     }
 
     private val listener: ScreenRecorderListener = object : ScreenRecorderListener {
@@ -50,8 +56,16 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(applicationContext, "Recording stopped", Toast.LENGTH_SHORT).show()
         }
 
+        override fun onRestored() {
+            Toast.makeText(applicationContext, "Recording restored", Toast.LENGTH_SHORT).show()
+        }
+
         override fun onCompleted(filepath: String?) {
-            Toast.makeText(applicationContext, "Recording completed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                applicationContext,
+                "Recording completed\nVideo saved to: $filepath",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

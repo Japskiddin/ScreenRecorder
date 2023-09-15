@@ -27,6 +27,8 @@ import io.github.japskiddin.screenrecorder.utils.showToast
 import java.io.File
 import java.io.IOException
 
+// TODO: подумать над неймингом методов, не нравится
+
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class ScreenRecorderService : Service() {
     private lateinit var mediaRecorder: MediaRecorder
@@ -73,6 +75,7 @@ class ScreenRecorderService : Service() {
 
     override fun onDestroy() {
         if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy")
+        reset()
         release()
         super.onDestroy()
     }
