@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <application>
+    <application tools:targetApi="q">
         <service
             android:name=".service.ScreenRecorderService"
             android:enabled="true"
