@@ -3,12 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <application tools:targetApi="q">
+
         <service
             android:name=".service.ScreenRecorderService"
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="mediaProjection"
             tools:targetApi="q" />
+
+        <receiver android:name=".receiver.NotificationReceiver" />
+
     </application>
 
 </manifest>

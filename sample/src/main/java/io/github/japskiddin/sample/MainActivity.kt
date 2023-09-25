@@ -39,15 +39,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         screenRecorder = ScreenRecorder(this, listener)
-        screenRecorder.restoreState(savedInstanceState)
+        screenRecorder.restoreInstanceState(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        screenRecorder.saveState(outState)
+        screenRecorder.saveInstanceState(outState)
         super.onSaveInstanceState(outState)
     }
 
-    private val listener: ScreenRecorderListener = object : ScreenRecorderListener {
+    private val listener = object : ScreenRecorderListener {
         override fun onStarted() {
             Toast.makeText(applicationContext, "Recording started", Toast.LENGTH_SHORT).show()
         }

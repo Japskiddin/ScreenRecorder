@@ -1,7 +1,6 @@
 package io.github.japskiddin.screenrecorder
 
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -12,7 +11,6 @@ import android.os.IBinder
 import android.util.Log
 import androidx.activity.result.ActivityResultLauncher
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import io.github.japskiddin.screenrecorder.contract.RecordVideo
 import io.github.japskiddin.screenrecorder.interfaces.ScreenRecorderListener
 import io.github.japskiddin.screenrecorder.interfaces.ServiceListener
@@ -20,8 +18,7 @@ import io.github.japskiddin.screenrecorder.model.RecordVideoResult
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_CODE
 import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.Companion.EXTRA_RECORDER_DATA
-import io.github.japskiddin.screenrecorder.service.ScreenRecorderService.LocalBinder
-import io.github.japskiddin.screenrecorder.utils.isNotLolipop
+import io.github.japskiddin.screenrecorder.utils.isServiceDead
 import io.github.japskiddin.screenrecorder.utils.showToast
 import java.lang.ref.WeakReference
 
@@ -55,13 +52,6 @@ class ScreenRecorder(
     }
 
     fun start() {
-        if (isNotLolipop()) {
-            weakActivity.get()?.let {
-                showToast(it, R.string.err_not_lolipop)
-            }
-            return
-        }
-
         if (isRecording) {
             stop()
         }
@@ -84,23 +74,13 @@ class ScreenRecorder(
         }
     }
 
-    fun saveState(outState: Bundle) {
+    fun saveInstanceState(outState: Bundle) {
         outState.putBoolean(EXTRA_IS_RECORD_RUNNING, isRecording)
     }
 
-    fun restoreState(savedInstanceState: Bundle?) {
+    fun restoreInstanceState(savedInstanceState: Bundle?) {
         isRecording = savedInstanceState?.getBoolean(EXTRA_IS_RECORD_RUNNING, false) ?: false
-        if (!isRecording) return
-        var isServiceAlive = false
-        val manager =
-            weakActivity.get()?.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (service in manager.getRunningServices(Int.MAX_VALUE)) {
-            if (ScreenRecorderService::class.java.name.equals(service.service.className)) {
-                isServiceAlive = true
-                break
-            }
-        }
-        if (!isServiceAlive) return
+        if (!isRecording || isServiceDead(weakActivity.get())) return
         listener.onRestored()
         bindService(0)
     }
@@ -112,22 +92,24 @@ class ScreenRecorder(
     private fun bindService(flag: Int) {
         weakActivity.get()?.let {
             val intent = Intent(it, ScreenRecorderService::class.java)
-            ContextCompat.startForegroundService(it, intent)
             it.bindService(intent, serviceConnection, flag)
         }
     }
 
     private fun releaseService() {
-        isServiceBound = false
-        screenRecorderService?.setListener(null)
-        screenRecorderService = null
-        weakActivity.get()?.unbindService(serviceConnection)
+        if (isServiceBound) {
+            screenRecorderService?.setListener(null)
+            screenRecorderService = null
+            weakActivity.get()?.unbindService(serviceConnection)
+            isServiceBound = false
+        }
     }
 
     private fun parseRecordIntent(result: RecordVideoResult) {
-        val intent = Intent(weakActivity.get(), ScreenRecorderService::class.java)
-        intent.putExtra(EXTRA_RECORDER_CODE, result.code)
-        intent.putExtra(EXTRA_RECORDER_DATA, result.intent)
+        val intent = Intent(weakActivity.get(), ScreenRecorderService::class.java).apply {
+            putExtra(EXTRA_RECORDER_CODE, result.code)
+            putExtra(EXTRA_RECORDER_DATA, result.intent)
+        }
         screenRecorderService?.parseIntent(intent)
         isRecordClicked = false
     }
@@ -135,10 +117,10 @@ class ScreenRecorder(
     /**
      * Callbacks for service binding, passed to bindService()
      */
-    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+    private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
-            val binder = service as LocalBinder
-            screenRecorderService = binder.service
+            val binder = service as ScreenRecorderService.ScreenRecorderBinder
+            screenRecorderService = binder.getService()
             screenRecorderService?.setListener(serviceListener)
             screenRecorderService?.startService()
             if (!isRecording) {
@@ -152,7 +134,7 @@ class ScreenRecorder(
         }
     }
 
-    private val serviceListener: ServiceListener = object : ServiceListener {
+    private val serviceListener = object : ServiceListener {
         override fun onRecordStarted() {
             isRecording = true
             listener.onStarted()

@@ -2,13 +2,12 @@ package io.github.japskiddin.screenrecorder.service
 
 import android.annotation.TargetApi
 import android.app.Activity
-import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
@@ -18,18 +17,22 @@ import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.IconCompat
 import io.github.japskiddin.screenrecorder.BuildConfig
 import io.github.japskiddin.screenrecorder.R
 import io.github.japskiddin.screenrecorder.interfaces.ServiceListener
+import io.github.japskiddin.screenrecorder.receiver.NotificationReceiver
 import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
 import io.github.japskiddin.screenrecorder.utils.getSysDate
+import io.github.japskiddin.screenrecorder.utils.getVirtualDisplay
 import io.github.japskiddin.screenrecorder.utils.showToast
 import java.io.File
 import java.io.IOException
 
+
 // TODO: подумать над неймингом методов, не нравится
 
-@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 class ScreenRecorderService : Service() {
     private lateinit var mediaRecorder: MediaRecorder
     private lateinit var mediaProjectionManager: MediaProjectionManager
@@ -37,7 +40,7 @@ class ScreenRecorderService : Service() {
     /**
      * Binder given to clients
      */
-    private val binder: IBinder = LocalBinder()
+    private val binder = ScreenRecorderBinder()
 
     /**
      * Registered callbacks
@@ -50,9 +53,9 @@ class ScreenRecorderService : Service() {
     private var isServiceAlive = false
 
     // Class used for the client Binder.
-    inner class LocalBinder : Binder() {
+    inner class ScreenRecorderBinder : Binder() {
         // Return this instance of MyService so clients can call public methods
-        val service: ScreenRecorderService get() = this@ScreenRecorderService
+        fun getService(): ScreenRecorderService = this@ScreenRecorderService
     }
 
     override fun onCreate() {
@@ -82,7 +85,7 @@ class ScreenRecorderService : Service() {
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         if (BuildConfig.DEBUG) Log.d(TAG, "onStartCommand | " + intent.action)
-        return START_NOT_STICKY
+        return START_STICKY
     }
 
     override fun onBind(intent: Intent): IBinder {
@@ -127,7 +130,13 @@ class ScreenRecorderService : Service() {
 
         val prepared = prepare()
         if (prepared) {
-            virtualDisplay = getVirtualDisplay()
+            virtualDisplay =
+                getVirtualDisplay(
+                    this,
+                    this.javaClass.simpleName,
+                    mediaProjection,
+                    mediaRecorder.surface
+                )
             if (virtualDisplay == null) {
                 stop()
                 return
@@ -188,10 +197,26 @@ class ScreenRecorderService : Service() {
     }
 
     private fun createNotification() {
-        val notification: Notification = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("Foreground Service")
+        val intent = Intent(this, NotificationReceiver::class.java)
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            PendingIntent.getBroadcast(this, 0, intent, 0)
+        }
+
+        val action = NotificationCompat.Action(
+            IconCompat.createWithResource(this, R.drawable.ic_stop_record),
+            ContextCompat.getString(this, R.string.stop_record),
+            pendingIntent
+        )
+
+        val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
+            .setContentTitle(ContextCompat.getString(this, R.string.recording_video))
             .setSmallIcon(R.drawable.ic_videocam)
-            .build()
+            .setOngoing(true)
+            .addAction(action)
+
+        val notification = builder.build()
 
         if (BuildConfig.DEBUG) Log.d(TAG, "startForeground")
         startForeground(NOTIFICATION_ID, notification)
@@ -248,23 +273,6 @@ class ScreenRecorderService : Service() {
                 return false
             }
         }
-    }
-
-    private fun getVirtualDisplay(): VirtualDisplay? {
-        val displayMetrics = resources.displayMetrics
-        val screenDensity = displayMetrics!!.densityDpi
-        val width = displayMetrics.widthPixels
-        val height = displayMetrics.heightPixels
-        return mediaProjection?.createVirtualDisplay(
-            this.javaClass.simpleName,
-            width,
-            height,
-            screenDensity,
-            DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-            mediaRecorder.surface,
-            null,
-            null
-        )
     }
 
     private fun reset() {
