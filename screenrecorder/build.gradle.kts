@@ -1,61 +1,20 @@
 plugins {
-    id("com.android.library")
-    kotlin("android")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
     namespace = "io.github.japskiddin.screenrecorder"
-    buildToolsVersion = AppConfig.buildToolsVersion
-    compileSdk = AppConfig.compileSdk
-
+    compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig {
-        minSdk = AppConfig.minSdk
+        minSdk = libs.versions.minSdk.get().toInt()
         vectorDrawables {
             useSupportLibrary = true
         }
-
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
-    packaging {
-        jniLibs {
-            excludes += listOf(
-                "**/kotlin/**",
-                "META-INF/androidx.*",
-                "META-INF/proguard/androidx-*"
-            )
-        }
-        resources {
-            excludes += listOf(
-                "/META-INF/*.kotlin_module",
-                "**/kotlin/**",
-                "**/*.txt",
-                "**/*.xml",
-                "**/*.properties",
-                "META-INF/DEPENDENCIES",
-                "META-INF/LICENSE",
-                "META-INF/LICENSE.txt",
-                "META-INF/license.txt",
-                "META-INF/NOTICE",
-                "META-INF/NOTICE.txt",
-                "META-INF/notice.txt",
-                "META-INF/ASL2.0",
-                "META-INF/*.version",
-                "META-INF/androidx.*",
-                "META-INF/proguard/androidx-*"
-            )
-        }
-    }
-
-    buildTypes {
-        val release by getting {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
+    buildFeatures {
+        buildConfig = true
     }
 
     compileOptions {
@@ -64,19 +23,12 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
-    }
-
-    buildFeatures {
-        viewBinding = true
-        buildConfig = true
+        jvmTarget = "17"
     }
 }
 
 dependencies {
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
 }

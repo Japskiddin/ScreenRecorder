@@ -1,22 +1,21 @@
 plugins {
-    id("com.android.application")
-    kotlin("android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
 }
 
 android {
     namespace = "io.github.japskiddin.sample"
-    buildToolsVersion = AppConfig.buildToolsVersion
-    compileSdk = AppConfig.compileSdk
-
+    compileSdk = libs.versions.compileSdk.get().toInt()
     defaultConfig {
         applicationId = "io.github.japskiddin.screenrecorder.sample"
-        minSdk = AppConfig.minSdk
-        targetSdk = AppConfig.targetSdk
-        versionCode = AppConfig.versionCode
-        versionName = AppConfig.versionName
+        minSdk = libs.versions.minSdk.get().toInt()
+        targetSdk = libs.versions.targetSdk.get().toInt()
+        versionCode = 1
+        versionName = "1.0.0"
         vectorDrawables {
             useSupportLibrary = true
         }
+        setProperty("archivesBaseName", "screen_recorder_sample-${applicationId}-${versionCode}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -29,6 +28,59 @@ android {
                 "proguard-rules.pro"
             )
         }
+        val debug by getting {
+            versionNameSuffix = " DEBUG"
+        }
+    }
+
+    packaging {
+        jniLibs {
+            excludes += listOf(
+                "**/kotlin/**",
+                "META-INF/androidx.*",
+                "META-INF/proguard/androidx-*"
+            )
+        }
+        resources {
+            excludes += listOf(
+                "/META-INF/*.kotlin_module",
+                "**/kotlin/**",
+                "**/*.txt",
+                "**/*.xml",
+                "**/*.properties",
+                "META-INF/DEPENDENCIES",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/license.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt",
+                "META-INF/notice.txt",
+                "META-INF/ASL2.0",
+                "META-INF/*.version",
+                "META-INF/androidx.*",
+                "META-INF/proguard/androidx-*"
+            )
+        }
+    }
+
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
+    buildFeatures {
+        viewBinding = true
+        buildConfig = true
+    }
+
+    lint {
+        abortOnError = false
+    }
+
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 
     compileOptions {
@@ -37,24 +89,44 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
+        jvmTarget = "17"
     }
 
-    buildFeatures {
-        viewBinding = true
-        buildConfig = true
+    applicationVariants.all {
+        val variant = this
+        variant.outputs.map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                val outputFileName =
+                    "screen_recorder_sample-${variant.flavorName}-${variant.versionName}-${buildType.name}.apk"
+                output.outputFileName = outputFileName
+            }
     }
 }
 
+tasks.withType<JavaCompile> {
+    val compilerArgs = options.compilerArgs
+    compilerArgs.addAll(
+        listOf(
+            "-Xlint:unchecked",
+            "-Xlint:deprecation"
+        )
+    )
+}
+
 dependencies {
-    implementation(libs.core.ktx)
-    implementation(libs.appcompat)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.ktx)
+
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+
     implementation(libs.material)
-    implementation(libs.constraintlayout)
-    implementation(libs.navigation.fragment.ktx)
-    implementation(libs.navigation.ui.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
+    androidTestImplementation(libs.androidx.espresso.core)
+
     implementation(project(":screenrecorder"))
 }
