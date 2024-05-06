@@ -34,7 +34,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Generate Debug APK
-        run: ./gradlew clean app:assembleDebug
+        run: ./gradlew clean sample:assembleDebug
 
       - name: Run tests
         run: ./gradlew clean cleanTest test --stacktrace

@@ -6,7 +6,7 @@ targetSdk = "34"
 versionName = "1.0.1"
 versionCode = "1"
 
-libVersionName = "1.1.0"
+libVersionName = "1.1.1"
 
 agp = "8.4.0"
 kotlinAndroid = "1.9.23"
