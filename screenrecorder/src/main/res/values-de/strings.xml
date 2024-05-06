@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">Aufzeichnen Ihres Bildschirms</string>
+  <string name="stop_recording_notification_message">Ziehen Sie nach unten, um die Aufnahme zu stoppen</string>
+  <string name="err_screen_record">Bildschirmaufzeichnung konnte nicht gestartet werden</string>
+  <string name="stop_record">Aufzeichnung stoppen</string>
+</resources>

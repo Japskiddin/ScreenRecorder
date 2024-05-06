@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">화면 녹화</string>
+  <string name="stop_recording_notification_message">녹음을 중지하려면 아래로 드래그하세요.</string>
+  <string name="err_screen_record">화면 녹화를 시작하지 못했습니다.</string>
+  <string name="stop_record">녹음 중지</string>
+</resources>

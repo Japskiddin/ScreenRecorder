@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">Nahrávání obrazovky</string>
+  <string name="stop_recording_notification_message">Přetažením dolů nahrávání zastavíte</string>
+  <string name="err_screen_record">Záznam obrazovky se nepodařilo spustit</string>
+  <string name="stop_record">Zastavit záznam</string>
+</resources>

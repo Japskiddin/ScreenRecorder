@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">Înregistrarea ecranului dvs</string>
+  <string name="stop_recording_notification_message">Trageți în jos pentru a opri înregistrarea</string>
+  <string name="err_screen_record">Nu s-a pornit înregistrarea ecranului</string>
+  <string name="stop_record">Opriți înregistrarea</string>
+</resources>

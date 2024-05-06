@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">Снимање вашег екрана</string>
+  <string name="stop_recording_notification_message">Превуците надоле да бисте зауставили снимање</string>
+  <string name="err_screen_record">Покретање снимања екрана није успело</string>
+  <string name="stop_record">Заустави снимање</string>
+</resources>

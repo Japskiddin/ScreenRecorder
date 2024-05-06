@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">錄製您的螢幕</string>
+  <string name="stop_recording_notification_message">向下拖曳停止錄音</string>
+  <string name="err_screen_record">啟動螢幕錄製失敗</string>
+  <string name="stop_record">停止記錄</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">Nire-record ang iyong screen</string>
+  <string name="stop_recording_notification_message">I-drag pababa upang ihinto ang pagre-record</string>
+  <string name="err_screen_record">Nabigong simulan ang screen record</string>
+  <string name="stop_record">Itigil ang record</string>
+</resources>

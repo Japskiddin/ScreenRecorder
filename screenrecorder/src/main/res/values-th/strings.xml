@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">กำลังบันทึกหน้าจอของคุณ</string>
+  <string name="stop_recording_notification_message">ลากลงเพื่อหยุดการบันทึก</string>
+  <string name="err_screen_record">ไม่สามารถเริ่มบันทึกหน้าจอได้</string>
+  <string name="stop_record">หยุดบันทึก</string>
+</resources>

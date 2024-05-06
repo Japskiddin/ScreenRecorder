@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="stop_recording_notification_title">Spelar in din skärm</string>
+  <string name="stop_recording_notification_message">Dra ned för att stoppa inspelningen</string>
+  <string name="err_screen_record">Det gick inte att starta skärminspelning</string>
+  <string name="stop_record">Stoppa inspelning</string>
+</resources>
