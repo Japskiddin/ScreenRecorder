@@ -1,0 +1,69 @@
+name: Release And Update
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  publish:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make properties file
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
+        run: |
+          touch github.properties
+          echo gpr.usr="$GPR_USER" >> github.properties
+          echo gpr.key="$GPR_API_KEY" >> github.properties
+        shell: bash
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup jdk-17
+        uses: actions/setup-java@main
+        with:
+          java-version: 17
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Generate Debug APK
+        run: ./gradlew clean app:assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v3
+        with:
+          name: apk_debug
+          path: app/build/outputs/apk/debug/**.apk
+
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+
+      - name: Create release and upload debug APK
+        uses: underwindfall/create-release-with-debugapk@v2.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GPR_API_KEY }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          asset_path: app/build/outputs/apk/debug/app-debug.apk
+          asset_name: Sample.apk
+          asset_content_type: application/zip
+          draft: false
+          prerelease: false
+
+      - name: Release build
+        run: ./gradlew assembleRelease
+
+      - name: Publish to Github Packages
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
+        run: ./gradlew publish

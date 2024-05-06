@@ -1,0 +1,40 @@
+name: Check build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make properties file
+        env:
+          GPR_USER: ${{ github.actor }}
+          GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
+        run: |
+          touch github.properties
+          echo gpr.usr="$GPR_USER" >> github.properties
+          echo gpr.key="$GPR_API_KEY" >> github.properties
+        shell: bash
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup jdk-17
+        uses: actions/setup-java@main
+        with:
+          java-version: 17
+          distribution: 'adopt'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Generate Debug APK
+        run: ./gradlew clean app:assembleDebug
+
+      - name: Run tests
+        run: ./gradlew clean cleanTest test --stacktrace
