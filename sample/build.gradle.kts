@@ -15,7 +15,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        setProperty("archivesBaseName", "screen_recorder_sample-${applicationId}-${versionCode}")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -27,9 +26,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-        }
-        val debug by getting {
-            versionNameSuffix = " DEBUG"
         }
     }
 
@@ -90,16 +86,6 @@ android {
 
     kotlinOptions {
         jvmTarget = "17"
-    }
-
-    applicationVariants.all {
-        val variant = this
-        variant.outputs.map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
-            .forEach { output ->
-                val outputFileName =
-                    "screen_recorder_sample-${variant.flavorName}-${variant.versionName}-${buildType.name}.apk"
-                output.outputFileName = outputFileName
-            }
     }
 }
 
