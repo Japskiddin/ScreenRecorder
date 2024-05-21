@@ -3,10 +3,10 @@ minSdk = "21"
 compileSdk = "34"
 targetSdk = "34"
 
-versionName = "1.0.3"
-versionCode = "3"
+versionName = "1.0.1"
+versionCode = "1"
 
-libVersionName = "1.1.3"
+libVersionName = "1.1.4"
 
 agp = "8.4.1"
 kotlinAndroid = "1.9.24"
