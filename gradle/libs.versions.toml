@@ -8,8 +8,8 @@ versionCode = "1"
 
 libVersionName = "1.1.3"
 
-agp = "8.4.0"
-kotlinAndroid = "1.9.23"
+agp = "8.4.1"
+kotlinAndroid = "1.9.24"
 jetbrainsDokka = "1.9.20"
 gradleNexusPublish = "2.0.0"
 
