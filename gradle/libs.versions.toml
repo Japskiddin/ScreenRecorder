@@ -10,8 +10,6 @@ libVersionName = "1.1.3"
 
 agp = "8.4.1"
 kotlinAndroid = "1.9.24"
-jetbrainsDokka = "1.9.20"
-gradleNexusPublish = "2.0.0"
 
 androidxCore = "1.13.1"
 androidxAppcompat = "1.6.1"
@@ -44,5 +42,3 @@ androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", vers
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinAndroid" }
-jetbrains-dokka = { id = "org.jetbrains.dokka", version.ref = "jetbrainsDokka" }
-gradle-nexus-publish = { id = "io.github.gradle-nexus.publish-plugin", version.ref = "gradleNexusPublish" }
