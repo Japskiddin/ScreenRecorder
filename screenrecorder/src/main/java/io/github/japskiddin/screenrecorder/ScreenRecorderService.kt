@@ -25,37 +25,13 @@ import androidx.core.app.ServiceCompat
 import androidx.core.graphics.drawable.IconCompat
 import java.io.File
 
-class ScreenRecorderService : Service() {
+internal class ScreenRecorderService : Service() {
   private var mediaProjection: MediaProjection? = null
   private var virtualDisplay: VirtualDisplay? = null
   private lateinit var mediaRecorder: MediaRecorder
   private lateinit var mediaProjectionManager: MediaProjectionManager
   private var filePath: String? = null
   private var receiver: ResultReceiver? = null
-
-  companion object {
-    private val TAG: String = ScreenRecorderService::class.java.simpleName
-    private const val NOTIFICATION_CHANNEL_ID = "ScreenRecordChannelId"
-    private const val NOTIFICATION_CHANNEL_NAME = "Screen Record Channel"
-    private const val RECORDER_FOLDER = "Recordings"
-    private const val NOTIFICATION_ID = 101
-
-    const val ACTION_ATTACH_LISTENER: String = "ACTION_ATTACH_LISTENER"
-
-    const val EXTRA_BUNDLED_LISTENER: String = "EXTRA_BUNDLED_LISTENER"
-    const val EXTRA_ERROR_REASON_KEY: String = "EXTRA_ERROR_REASON_KEY"
-    const val EXTRA_ERROR_KEY: String = "EXTRA_ERROR_KEY"
-    const val EXTRA_FILE_PATH_KEY: String = "EXTRA_FILE_PATH_KEY"
-    const val EXTRA_ON_COMPLETE_KEY: String = "EXTRA_ON_COMPLETE_KEY"
-    const val EXTRA_ON_START_KEY: String = "EXTRA_ON_START_KEY"
-    const val EXTRA_RESULT_CODE_KEY: String = "EXTRA_RESULT_CODE_KEY"
-    const val EXTRA_RESULT_DATA_KEY: String = "EXTRA_RESULT_DATA_KEY"
-
-    const val ON_COMPLETE: String = "Record is completed"
-    const val SETTINGS_ERROR: Int = 38
-    const val GENERAL_ERROR: Int = 100
-    const val ON_START: Int = 111
-  }
 
   override fun onCreate() {
     super.onCreate()
@@ -296,5 +272,29 @@ class ScreenRecorderService : Service() {
       putString(EXTRA_FILE_PATH_KEY, filePath)
     }
     receiver?.send(Activity.RESULT_OK, bundle)
+  }
+
+  internal companion object {
+    private val TAG: String = ScreenRecorderService::class.java.simpleName
+    private const val NOTIFICATION_CHANNEL_ID = "ScreenRecordChannelId"
+    private const val NOTIFICATION_CHANNEL_NAME = "Screen Record Channel"
+    private const val RECORDER_FOLDER = "Recordings"
+    private const val NOTIFICATION_ID = 101
+
+    const val ACTION_ATTACH_LISTENER: String = "ACTION_ATTACH_LISTENER"
+
+    const val EXTRA_BUNDLED_LISTENER: String = "EXTRA_BUNDLED_LISTENER"
+    const val EXTRA_ERROR_REASON_KEY: String = "EXTRA_ERROR_REASON_KEY"
+    const val EXTRA_ERROR_KEY: String = "EXTRA_ERROR_KEY"
+    const val EXTRA_FILE_PATH_KEY: String = "EXTRA_FILE_PATH_KEY"
+    const val EXTRA_ON_COMPLETE_KEY: String = "EXTRA_ON_COMPLETE_KEY"
+    const val EXTRA_ON_START_KEY: String = "EXTRA_ON_START_KEY"
+    const val EXTRA_RESULT_CODE_KEY: String = "EXTRA_RESULT_CODE_KEY"
+    const val EXTRA_RESULT_DATA_KEY: String = "EXTRA_RESULT_DATA_KEY"
+
+    const val ON_COMPLETE: String = "Record is completed"
+    const val SETTINGS_ERROR: Int = 38
+    const val GENERAL_ERROR: Int = 100
+    const val ON_START: Int = 111
   }
 }
