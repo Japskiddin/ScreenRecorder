@@ -14,10 +14,6 @@ kotlin {
 
 android {
   namespace = "io.github.japskiddin.screenrecorder"
-
-  buildFeatures {
-    buildConfig = true
-  }
 }
 
 dependencies {
