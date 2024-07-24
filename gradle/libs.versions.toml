@@ -24,6 +24,8 @@ androidx-espresso-core = "3.6.1"
 
 jvm = "21"
 
+jreleaser = "1.13.1"
+
 [libraries]
 androidx-core = { module = "androidx.core:core", version.ref = "androidx-core" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
@@ -48,6 +50,7 @@ kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 android-application = { id = "com.android.application", version.ref = "agp" }
 android-library = { id = "com.android.library", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-android" }
+jreleaser = { id = "org.jreleaser", version.ref = "jreleaser" }
 
 # Project internal convention plugins
 app-android-application = { id = "app.android.application", version = "unspecified" }

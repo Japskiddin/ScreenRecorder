@@ -1,10 +1,9 @@
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jetbrains.kotlin.konan.properties.hasProperty
-import java.io.FileInputStream
-import java.util.Properties
+import org.jreleaser.model.Active
 
 plugins {
   alias(libs.plugins.app.android.library)
+  alias(libs.plugins.jreleaser)
   id("maven-publish")
 }
 
@@ -14,76 +13,114 @@ kotlin {
 
 android {
   namespace = "io.github.japskiddin.screenrecorder"
+
+  packaging {
+    resources {
+      excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    }
+  }
 }
 
 dependencies {
   implementation(libs.androidx.core)
 }
 
-val propertiesName = "github.properties"
-val githubProperties = Properties().apply {
-  if (rootProject.file(propertiesName).exists()) {
-    load(FileInputStream(rootProject.file(propertiesName)))
-  }
-}
-val outputsDirectoryPath = layout.buildDirectory.dir("outputs").get().toString()
+// Deploy
 
-val sourceFiles = android.sourceSets.getByName("main").java.getSourceFiles()
-
-tasks.register<Javadoc>("withJavadoc") {
-  isFailOnError = false
-  dependsOn(tasks.named("compileDebugSources"), tasks.named("compileReleaseSources"))
-
-  // add Android runtime classpath
-  android.bootClasspath.forEach { classpath += project.fileTree(it) }
-
-  // add classpath for all dependencies
-  android.libraryVariants.forEach { variant ->
-    variant.javaCompileProvider.get().classpath.files.forEach { file ->
-      classpath += project.fileTree(file)
+android {
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+      withJavadocJar()
     }
   }
-
-  source = sourceFiles
 }
 
-tasks.register<Jar>("withJavadocJar") {
-  archiveClassifier.set("javadoc")
-  dependsOn(tasks.named("withJavadoc"))
-  val destination = tasks.named<Javadoc>("withJavadoc").get().destinationDir
-  from(destination)
-}
-
-tasks.register<Jar>("withSourcesJar") {
-  archiveClassifier.set("sources")
-  from(sourceFiles)
-}
+version = project.properties["VERSION_NAME"].toString()
+description = project.properties["POM_DESCRIPTION"].toString()
 
 publishing {
   publications {
-    create<MavenPublication>("ScreenRecorder") {
-      groupId = "io.github.japskiddin"
-      artifactId = "screenrecorder"
-      version = libs.versions.library.version.name.get()
-      artifact("${outputsDirectoryPath}/aar/${artifactId}-release.aar")
+    create<MavenPublication>("release") {
+      groupId = project.properties["GROUP"].toString()
+      artifactId = project.properties["POM_ARTIFACT_ID"].toString()
+
+      pom {
+        name.set(project.properties["POM_NAME"].toString())
+        description.set(project.properties["POM_DESCRIPTION"].toString())
+        url.set("https://github.com/Japskiddin/ScreenRecorder")
+        issueManagement {
+          url.set("https://github.com/Japskiddin/ScreenRecorder/issues")
+        }
+
+        scm {
+          url.set("https://github.com/Japskiddin/ScreenRecorder")
+          connection.set("scm:git://github.com/Japskiddin/ScreenRecorder.git")
+          developerConnection.set("scm:git://github.com/Japskiddin/ScreenRecorder.git")
+        }
+
+        licenses {
+          license {
+            name.set("The Apache Software License, Version 2.0")
+            url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            distribution.set("repo")
+          }
+        }
+
+        developers {
+          developer {
+            id.set("Japskiddin")
+            name.set("Nikita Lazarev")
+            email.set("japskiddin@gmail.com")
+          }
+        }
+
+        afterEvaluate {
+          from(components["release"])
+        }
+      }
     }
   }
-
   repositories {
     maven {
-      name = "GithubPackages"
-      url = uri("https://maven.pkg.github.com/japskiddin/ScreenRecorder")
-      credentials {
-        username = if (githubProperties.hasProperty("gpr.usr")) {
-          githubProperties.getProperty("gpr.usr")
-        } else {
-          System.getenv("GPR_USER")
-        }
-        password = if (githubProperties.hasProperty("gpr.key")) {
-          githubProperties.getProperty("gpr.key")
-        } else {
-          System.getenv("GPR_API_KEY")
-        }
+      setUrl(layout.buildDirectory.dir("staging-deploy"))
+    }
+  }
+}
+
+jreleaser {
+  project {
+    inceptionYear = "2024"
+    author("@Japskiddin")
+  }
+  gitRootSearch = true
+  signing {
+    active = Active.ALWAYS
+    armored = true
+    verify = true
+  }
+  release {
+    github {
+      skipTag = true
+      sign = true
+      branch = "main"
+      branchPush = "main"
+      overwrite = true
+    }
+  }
+  deploy {
+    maven {
+      mavenCentral.create("sonatype") {
+        active = Active.ALWAYS
+        url = "https://central.sonatype.com/api/v1/publisher"
+        stagingRepository(layout.buildDirectory.dir("staging-deploy").get().toString())
+        setAuthorization("Basic")
+        applyMavenCentralRules = false
+        sign = true
+        checksums = true
+        sourceJar = true
+        javadocJar = true
+        retryDelay = 60
       }
     }
   }
