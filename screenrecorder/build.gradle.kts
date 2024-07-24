@@ -10,9 +10,9 @@ plugins {
 
 android {
   namespace = "io.github.japskiddin.screenrecorder"
-  compileSdk = libs.versions.compileSdk.get().toInt()
+  compileSdk = libs.versions.androidSdk.compile.get().toInt()
   defaultConfig {
-    minSdk = libs.versions.minSdk.get().toInt()
+    minSdk = libs.versions.androidSdk.min.get().toInt()
     vectorDrawables {
       useSupportLibrary = true
     }
@@ -63,12 +63,12 @@ android {
   }
 
   compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
   }
 
   kotlinOptions {
-    jvmTarget = "17"
+    jvmTarget = "21"
   }
 }
 
@@ -122,7 +122,7 @@ publishing {
     create<MavenPublication>("ScreenRecorder") {
       groupId = "io.github.japskiddin"
       artifactId = "screenrecorder"
-      version = libs.versions.libVersionName.get()
+      version = libs.versions.library.version.name.get()
       artifact("${outputsDirectoryPath}/aar/${artifactId}-release.aar")
     }
   }
