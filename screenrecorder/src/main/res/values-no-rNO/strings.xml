@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-  <string name="stop_recording_notification_title">Tar opp skjermen din</string>
-  <string name="stop_recording_notification_message">Dra ned for å stoppe opptaket</string>
-  <string name="err_screen_record">Kunne ikke starte skjermopptak</string>
-  <string name="stop_record">Stopp opptak</string>
-</resources>
