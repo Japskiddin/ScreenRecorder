@@ -3,8 +3,6 @@ androidSdk-min = "21"
 androidSdk-compile = "34"
 androidSdk-target = "34"
 
-library-version-name = "1.1.4"
-
 agp = "8.5.1"
 kotlin-android = "2.0.0"
 
