@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
 import org.jetbrains.kotlin.konan.properties.hasProperty
 import java.io.FileInputStream
 import java.util.Properties
@@ -6,6 +7,10 @@ plugins {
   alias(libs.plugins.android.library)
   alias(libs.plugins.jetbrains.kotlin.android)
   id("maven-publish")
+}
+
+kotlin {
+  explicitApi = ExplicitApiMode.Strict
 }
 
 android {
@@ -18,48 +23,8 @@ android {
     }
   }
 
-  packaging {
-    jniLibs {
-      excludes += listOf(
-        "**/kotlin/**",
-        "META-INF/androidx.*",
-        "META-INF/proguard/androidx-*"
-      )
-    }
-    resources {
-      excludes += listOf(
-        "/META-INF/*.kotlin_module",
-        "**/kotlin/**",
-        "**/*.txt",
-        "**/*.xml",
-        "**/*.properties",
-        "META-INF/DEPENDENCIES",
-        "META-INF/LICENSE",
-        "META-INF/LICENSE.txt",
-        "META-INF/license.txt",
-        "META-INF/NOTICE",
-        "META-INF/NOTICE.txt",
-        "META-INF/notice.txt",
-        "META-INF/ASL2.0",
-        "META-INF/*.version",
-        "META-INF/androidx.*",
-        "META-INF/proguard/androidx-*"
-      )
-    }
-  }
-
   buildFeatures {
     buildConfig = true
-  }
-
-  buildTypes {
-    val release by getting {
-      isMinifyEnabled = false
-      proguardFiles(
-        getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
-      )
-    }
   }
 
   compileOptions {
