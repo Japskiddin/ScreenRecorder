@@ -4,8 +4,7 @@ import java.io.FileInputStream
 import java.util.Properties
 
 plugins {
-  alias(libs.plugins.android.library)
-  alias(libs.plugins.jetbrains.kotlin.android)
+  alias(libs.plugins.app.android.library)
   id("maven-publish")
 }
 
@@ -15,25 +14,9 @@ kotlin {
 
 android {
   namespace = "io.github.japskiddin.screenrecorder"
-  compileSdk = libs.versions.androidSdk.compile.get().toInt()
-  defaultConfig {
-    minSdk = libs.versions.androidSdk.min.get().toInt()
-    vectorDrawables {
-      useSupportLibrary = true
-    }
-  }
 
   buildFeatures {
     buildConfig = true
-  }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-  }
-
-  kotlinOptions {
-    jvmTarget = "21"
   }
 }
 

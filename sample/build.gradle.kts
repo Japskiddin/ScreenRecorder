@@ -1,32 +1,13 @@
 plugins {
-  alias(libs.plugins.android.application)
-  alias(libs.plugins.jetbrains.kotlin.android)
+  alias(libs.plugins.app.android.application)
 }
 
 android {
   namespace = "io.github.japskiddin.sample"
-  compileSdk = libs.versions.androidSdk.compile.get().toInt()
   defaultConfig {
     applicationId = "io.github.japskiddin.screenrecorder.sample"
-    minSdk = libs.versions.androidSdk.min.get().toInt()
-    targetSdk = libs.versions.androidSdk.target.get().toInt()
     versionCode = 1
     versionName = "1.0.0"
-    vectorDrawables {
-      useSupportLibrary = true
-    }
-    testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-  }
-
-  buildTypes {
-    val release by getting {
-      isMinifyEnabled = true
-      isShrinkResources = true
-      proguardFiles(
-        getDefaultProguardFile("proguard-android-optimize.txt"),
-        "proguard-rules.pro"
-      )
-    }
   }
 
   packaging {
@@ -77,15 +58,6 @@ android {
   dependenciesInfo {
     includeInApk = false
     includeInBundle = false
-  }
-
-  compileOptions {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-  }
-
-  kotlinOptions {
-    jvmTarget = "21"
   }
 }
 
