@@ -23,6 +23,7 @@ android {
 
 dependencies {
   implementation(libs.androidx.core)
+  implementation(libs.androidx.core.ktx)
 }
 
 // Deploy

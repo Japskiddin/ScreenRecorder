@@ -15,40 +15,46 @@ public class ScreenRecorder(context: Context) {
   public interface ScreenRecorderListener {
     public fun recorderOnStart()
 
-    public fun recorderOnComplete(filepath: String?)
+    public fun recorderOnComplete(filepath: String)
 
     public fun recorderOnError(errorMessage: Int)
   }
 
   private val receiver: ResultReceiver = object : ResultReceiver(Handler(Looper.getMainLooper())) {
-    override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
-      super.onReceiveResult(resultCode, resultData)
-      if (resultCode == Activity.RESULT_OK) {
-        val errorListener = resultData.getString(ScreenRecorderService.EXTRA_ERROR_REASON_KEY)
-        val onComplete = resultData.getString(ScreenRecorderService.EXTRA_ON_COMPLETE_KEY)
-        val onStartCode = resultData.getInt(ScreenRecorderService.EXTRA_ON_START_KEY)
-        val errorCode = resultData.getInt(ScreenRecorderService.EXTRA_ERROR_KEY)
-        // There was an error
-        if (errorListener != null) {
-          if (BuildConfig.DEBUG) {
-            val code = if (errorCode > 0) errorCode else ScreenRecorderService.GENERAL_ERROR
-            Log.e(TAG, "$code: $errorListener")
-          }
-          recorderListener?.recorderOnError(R.string.err_screen_record)
-          try {
-            stopScreenRecording()
-          } catch (ignored: Exception) {
-          }
-        } else if (onComplete != null) {
-          // OnComplete was called
+    fun receiveError(resultData: Bundle) {
+      val errorCode = resultData.getInt(
+        ScreenRecorderService.EXTRA_ERROR_KEY,
+        ScreenRecorderService.GENERAL_ERROR
+      )
+      val errorListener = resultData.getString(ScreenRecorderService.EXTRA_ERROR_REASON_KEY)
+      if (BuildConfig.DEBUG) {
+        Log.e(TAG, "$errorCode: $errorListener")
+      }
+      recorderListener?.recorderOnError(R.string.err_screen_record)
+      try {
+        stopScreenRecording()
+      } catch (ignored: Exception) {
+      }
+    }
+
+    fun receiveMessage(resultData: Bundle) {
+      val messageCode = resultData.getInt(ScreenRecorderService.EXTRA_ON_MESSAGE_KEY, 0)
+      when (messageCode) {
+        ScreenRecorderService.ON_START -> recorderListener?.recorderOnStart()
+        ScreenRecorderService.ON_COMPLETE -> {
           val filepath = resultData.getString(ScreenRecorderService.EXTRA_FILE_PATH_KEY, "")
-          if (filepath.isNotEmpty()) {
+          if (filepath.isNotBlank()) {
             recorderListener?.recorderOnComplete(filepath)
           }
-        } else if (onStartCode != 0) {
-          // OnStart was called
-          recorderListener?.recorderOnStart()
         }
+      }
+    }
+
+    override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
+      super.onReceiveResult(resultCode, resultData)
+      when (resultCode) {
+        Activity.RESULT_OK -> receiveMessage(resultData)
+        Activity.RESULT_CANCELED -> receiveError(resultData)
       }
     }
   }

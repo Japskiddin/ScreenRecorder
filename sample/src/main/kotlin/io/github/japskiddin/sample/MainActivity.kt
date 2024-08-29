@@ -134,7 +134,7 @@ class MainActivity : AppCompatActivity() {
       disableRecord()
     }
 
-    override fun recorderOnComplete(filepath: String?) {
+    override fun recorderOnComplete(filepath: String) {
       if (isFinishing) return
       Toast.makeText(
         applicationContext,

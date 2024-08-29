@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.res.Configuration
 import android.media.CamcorderProfile
 import android.os.Build
+import android.os.Bundle
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import androidx.core.os.bundleOf
 import io.github.japskiddin.screenrecorder.model.CameraInfo
 import io.github.japskiddin.screenrecorder.model.DisplayInfo
 import io.github.japskiddin.screenrecorder.model.RecordingInfo
@@ -91,3 +93,6 @@ private fun calculateRecordingInfo(
   }
   return RecordingInfo(frameWidth, frameHeight, camera.frameRate, display.density)
 }
+
+internal fun Map<String, Any?>.toBundle(): Bundle = bundleOf(*this.toList().toTypedArray())
+

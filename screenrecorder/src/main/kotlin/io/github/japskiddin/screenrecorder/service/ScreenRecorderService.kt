@@ -15,7 +15,6 @@ import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
-import android.os.Bundle
 import android.os.IBinder
 import android.os.ResultReceiver
 import android.util.Log
@@ -28,6 +27,7 @@ import io.github.japskiddin.screenrecorder.R
 import io.github.japskiddin.screenrecorder.receiver.NotificationReceiver
 import io.github.japskiddin.screenrecorder.utils.curSysDate
 import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
+import io.github.japskiddin.screenrecorder.utils.toBundle
 import java.io.File
 
 internal class ScreenRecorderService : Service() {
@@ -62,7 +62,13 @@ internal class ScreenRecorderService : Service() {
     super.onDestroy()
     if (BuildConfig.DEBUG) Log.d(TAG, "onDestroy")
     resetAll()
-    callOnComplete()
+    sendToReceiver(
+      Activity.RESULT_OK,
+      mapOf(
+        EXTRA_ON_MESSAGE_KEY to ON_COMPLETE,
+        EXTRA_FILE_PATH_KEY to filePath
+      )
+    )
     receiver = null
   }
 
@@ -96,10 +102,7 @@ internal class ScreenRecorderService : Service() {
       try {
         initMediaRecorder()
       } catch (e: Exception) {
-        val bundle = Bundle().apply {
-          putString(EXTRA_ERROR_REASON_KEY, Log.getStackTraceString(e))
-        }
-        receiver?.send(Activity.RESULT_OK, bundle)
+        sendError(GENERAL_ERROR, e)
       }
 
       try {
@@ -107,33 +110,23 @@ internal class ScreenRecorderService : Service() {
           initMediaProjection(resultCode, resultData)
         }
       } catch (e: Exception) {
-        val bundle = Bundle().apply {
-          putString(EXTRA_ERROR_REASON_KEY, Log.getStackTraceString(e))
-        }
-        receiver?.send(Activity.RESULT_OK, bundle)
+        sendError(GENERAL_ERROR, e)
       }
 
       try {
         initVirtualDisplay()
       } catch (e: Exception) {
-        val bundle = Bundle().apply {
-          putString(EXTRA_ERROR_REASON_KEY, Log.getStackTraceString(e))
-        }
-        receiver?.send(Activity.RESULT_OK, bundle)
+        sendError(GENERAL_ERROR, e)
       }
 
       try {
         mediaRecorder.start()
-        val bundle = Bundle().apply {
-          putInt(EXTRA_ON_START_KEY, ON_START)
-        }
-        receiver?.send(Activity.RESULT_OK, bundle)
+        sendToReceiver(
+          Activity.RESULT_OK,
+          mapOf(EXTRA_ON_MESSAGE_KEY to ON_START)
+        )
       } catch (e: Exception) {
-        val bundle = Bundle().apply {
-          putInt(EXTRA_ERROR_KEY, SETTINGS_ERROR)
-          putString(EXTRA_ERROR_REASON_KEY, Log.getStackTraceString(e))
-        }
-        receiver?.send(Activity.RESULT_OK, bundle)
+        sendError(SETTINGS_ERROR, e)
       }
     } else {
       if (action == ACTION_ATTACH_LISTENER) {
@@ -201,14 +194,14 @@ internal class ScreenRecorderService : Service() {
 
   @Throws(Exception::class)
   private fun initMediaRecorder() {
-    val folder = File(cacheDir, RECORDER_FOLDER)
-    if (!folder.exists()) {
-      val created = folder.mkdir()
-      if (!created) return
-    }
+    val folderPath = File(cacheDir, RECORDER_FOLDER).apply {
+      if (!exists()) {
+        val created = mkdir()
+        if (!created) return
+      }
+    }.absolutePath
 
-    val videoName = "video_$curSysDate.mp4"
-    filePath = folder.absolutePath + File.separator + videoName
+    filePath = "$folderPath/video_$curSysDate.mp4"
 
     val recordingInfo = getRecordingInfo(this)
     mediaRecorder.apply {
@@ -225,14 +218,11 @@ internal class ScreenRecorderService : Service() {
 
   private fun initVirtualDisplay() {
     val displayMetrics = resources.displayMetrics
-    val screenDensity = displayMetrics.densityDpi
-    val width = displayMetrics.widthPixels
-    val height = displayMetrics.heightPixels
     virtualDisplay = mediaProjection!!.createVirtualDisplay(
       TAG,
-      width,
-      height,
-      screenDensity,
+      displayMetrics.widthPixels,
+      displayMetrics.heightPixels,
+      displayMetrics.densityDpi,
       DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
       mediaRecorder.surface,
       null,
@@ -251,27 +241,26 @@ internal class ScreenRecorderService : Service() {
   private fun resetAll() {
     ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
     try {
-      if (virtualDisplay != null) {
-        virtualDisplay!!.release()
-        virtualDisplay = null
-      }
+      virtualDisplay?.release()
+      virtualDisplay = null
       mediaRecorder.reset()
       mediaRecorder.release()
-      if (mediaProjection != null) {
-        mediaProjection!!.stop()
-        mediaProjection = null
-      }
+      mediaProjection?.stop()
+      mediaProjection = null
     } catch (ignored: IllegalStateException) {
     }
   }
 
-  private fun callOnComplete() {
-    val bundle = Bundle().apply {
-      putString(EXTRA_ON_COMPLETE_KEY, ON_COMPLETE)
-      putString(EXTRA_FILE_PATH_KEY, filePath)
-    }
-    receiver?.send(Activity.RESULT_OK, bundle)
-  }
+  private fun sendError(key: Int, e: Exception) = sendToReceiver(
+    Activity.RESULT_CANCELED,
+    mapOf(
+      EXTRA_ERROR_KEY to key,
+      EXTRA_ERROR_REASON_KEY to e.stackTraceToString()
+    )
+  )
+
+  private fun sendToReceiver(resultCode: Int, map: Map<String, Any?>) =
+    receiver?.send(resultCode, map.toBundle())
 
   internal companion object {
     private val TAG: String = ScreenRecorderService::class.java.simpleName
@@ -286,14 +275,13 @@ internal class ScreenRecorderService : Service() {
     const val EXTRA_ERROR_REASON_KEY: String = "EXTRA_ERROR_REASON_KEY"
     const val EXTRA_ERROR_KEY: String = "EXTRA_ERROR_KEY"
     const val EXTRA_FILE_PATH_KEY: String = "EXTRA_FILE_PATH_KEY"
-    const val EXTRA_ON_COMPLETE_KEY: String = "EXTRA_ON_COMPLETE_KEY"
-    const val EXTRA_ON_START_KEY: String = "EXTRA_ON_START_KEY"
+    const val EXTRA_ON_MESSAGE_KEY: String = "EXTRA_ON_MESSAGE_KEY"
     const val EXTRA_RESULT_CODE_KEY: String = "EXTRA_RESULT_CODE_KEY"
     const val EXTRA_RESULT_DATA_KEY: String = "EXTRA_RESULT_DATA_KEY"
 
-    const val ON_COMPLETE: String = "Record is completed"
-    const val SETTINGS_ERROR: Int = 38
-    const val GENERAL_ERROR: Int = 100
-    const val ON_START: Int = 111
+    const val GENERAL_ERROR: Int = -100
+    const val SETTINGS_ERROR: Int = -101
+    const val ON_START: Int = 100
+    const val ON_COMPLETE: Int = 101
   }
 }
