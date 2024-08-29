@@ -16,6 +16,7 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.IBinder
+import android.os.RemoteException
 import android.os.ResultReceiver
 import android.util.Log
 import androidx.annotation.RequiresApi
@@ -150,7 +151,13 @@ internal class ScreenRecorderService : Service() {
     } else {
       0
     }
-    ServiceCompat.startForeground(this, NOTIFICATION_ID, notification, serviceType)
+    try {
+      ServiceCompat.startForeground(this, NOTIFICATION_ID, notification, serviceType)
+    } catch (e: RemoteException) {
+      sendError(GENERAL_ERROR, e)
+    } catch (e: SecurityException) {
+      sendError(SECURITY_ERROR, e)
+    }
   }
 
   private fun createNotification(): Notification {
@@ -239,7 +246,10 @@ internal class ScreenRecorderService : Service() {
   }
 
   private fun resetAll() {
-    ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+    try {
+      ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
+    } catch (ignored: Exception) {
+    }
     try {
       virtualDisplay?.release()
       virtualDisplay = null
@@ -281,6 +291,7 @@ internal class ScreenRecorderService : Service() {
 
     const val GENERAL_ERROR: Int = -100
     const val SETTINGS_ERROR: Int = -101
+    const val SECURITY_ERROR: Int = -102
     const val ON_START: Int = 100
     const val ON_COMPLETE: Int = 101
   }
