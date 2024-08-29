@@ -1,4 +1,4 @@
-package io.github.japskiddin.screenrecorder
+package io.github.japskiddin.screenrecorder.service
 
 import android.app.Activity
 import android.app.Notification
@@ -23,6 +23,11 @@ import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
 import androidx.core.graphics.drawable.IconCompat
+import io.github.japskiddin.screenrecorder.BuildConfig
+import io.github.japskiddin.screenrecorder.R
+import io.github.japskiddin.screenrecorder.receiver.NotificationReceiver
+import io.github.japskiddin.screenrecorder.utils.curSysDate
+import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
 import java.io.File
 
 internal class ScreenRecorderService : Service() {
@@ -47,13 +52,9 @@ internal class ScreenRecorderService : Service() {
       MediaRecorder()
     }
     mediaProjectionManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      applicationContext.getSystemService(
-        MediaProjectionManager::class.java
-      )
+      applicationContext.getSystemService(MediaProjectionManager::class.java)
     } else {
-      applicationContext.getSystemService(
-        MEDIA_PROJECTION_SERVICE
-      ) as MediaProjectionManager
+      applicationContext.getSystemService(MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
     }
   }
 
@@ -65,9 +66,7 @@ internal class ScreenRecorderService : Service() {
     receiver = null
   }
 
-  override fun onBind(intent: Intent): IBinder? {
-    return null
-  }
+  override fun onBind(intent: Intent): IBinder? = null
 
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     val action = intent?.action
@@ -147,7 +146,7 @@ internal class ScreenRecorderService : Service() {
       }
     }
 
-    return START_STICKY
+    return START_NOT_STICKY
   }
 
   private fun startAsForeground() {

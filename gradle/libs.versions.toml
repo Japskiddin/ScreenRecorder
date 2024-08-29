@@ -1,12 +1,12 @@
 [versions]
 androidSdk-min = "21"
-androidSdk-compile = "34"
-androidSdk-target = "34"
+androidSdk-compile = "35"
+androidSdk-target = "35"
 
-agp = "8.5.1"
-kotlin-android = "2.0.0"
+agp = "8.5.2"
+kotlin-android = "2.0.20"
 
-android-tools = "31.5.1"
+android-tools = "31.5.2"
 
 androidx-core = "1.13.1"
 androidx-appcompat = "1.7.0"

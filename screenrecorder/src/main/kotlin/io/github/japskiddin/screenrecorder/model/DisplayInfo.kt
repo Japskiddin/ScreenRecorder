@@ -1,4 +1,4 @@
-package io.github.japskiddin.screenrecorder
+package io.github.japskiddin.screenrecorder.model
 
 internal data class DisplayInfo(
   val width: Int,

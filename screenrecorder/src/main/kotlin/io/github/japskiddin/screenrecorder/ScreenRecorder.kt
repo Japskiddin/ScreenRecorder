@@ -9,7 +9,7 @@ import android.os.Handler
 import android.os.Looper
 import android.os.ResultReceiver
 import android.util.Log
-import java.util.Locale
+import io.github.japskiddin.screenrecorder.service.ScreenRecorderService
 
 public class ScreenRecorder(context: Context) {
   public interface ScreenRecorderListener {
@@ -24,21 +24,15 @@ public class ScreenRecorder(context: Context) {
     override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
       super.onReceiveResult(resultCode, resultData)
       if (resultCode == Activity.RESULT_OK) {
-        val errorListener =
-          resultData.getString(ScreenRecorderService.EXTRA_ERROR_REASON_KEY)
-        val onComplete =
-          resultData.getString(ScreenRecorderService.EXTRA_ON_COMPLETE_KEY)
+        val errorListener = resultData.getString(ScreenRecorderService.EXTRA_ERROR_REASON_KEY)
+        val onComplete = resultData.getString(ScreenRecorderService.EXTRA_ON_COMPLETE_KEY)
         val onStartCode = resultData.getInt(ScreenRecorderService.EXTRA_ON_START_KEY)
         val errorCode = resultData.getInt(ScreenRecorderService.EXTRA_ERROR_KEY)
         // There was an error
         if (errorListener != null) {
           if (BuildConfig.DEBUG) {
-            val code =
-              if (errorCode > 0) errorCode else ScreenRecorderService.GENERAL_ERROR
-            Log.e(
-              TAG,
-              String.format(Locale.getDefault(), "%d: %s", code, errorListener)
-            )
+            val code = if (errorCode > 0) errorCode else ScreenRecorderService.GENERAL_ERROR
+            Log.e(TAG, "$code: $errorListener")
           }
           recorderListener?.recorderOnError(R.string.err_screen_record)
           try {
@@ -47,8 +41,7 @@ public class ScreenRecorder(context: Context) {
           }
         } else if (onComplete != null) {
           // OnComplete was called
-          val filepath =
-            resultData.getString(ScreenRecorderService.EXTRA_FILE_PATH_KEY, "")
+          val filepath = resultData.getString(ScreenRecorderService.EXTRA_FILE_PATH_KEY, "")
           if (filepath.isNotEmpty()) {
             recorderListener?.recorderOnComplete(filepath)
           }

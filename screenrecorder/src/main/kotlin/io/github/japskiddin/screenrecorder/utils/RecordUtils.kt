@@ -1,4 +1,4 @@
-package io.github.japskiddin.screenrecorder
+package io.github.japskiddin.screenrecorder.utils
 
 import android.content.Context
 import android.content.res.Configuration
@@ -6,6 +6,9 @@ import android.media.CamcorderProfile
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.WindowManager
+import io.github.japskiddin.screenrecorder.model.CameraInfo
+import io.github.japskiddin.screenrecorder.model.DisplayInfo
+import io.github.japskiddin.screenrecorder.model.RecordingInfo
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
