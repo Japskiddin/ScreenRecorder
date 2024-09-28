@@ -3,17 +3,17 @@ androidSdk-min = "21"
 androidSdk-compile = "35"
 androidSdk-target = "35"
 
-agp = "8.5.2"
+agp = "8.6.1"
 kotlin-android = "2.0.20"
 
-android-tools = "31.5.2"
+android-tools = "31.6.1"
 
 androidx-core = "1.13.1"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.1.4"
-androidx-navigation = "2.7.7"
+androidx-navigation = "2.8.1"
 
-bundletool = "1.15.6"
+bundletool = "1.17.1"
 material = "1.12.0"
 
 junit = "4.13.2"
