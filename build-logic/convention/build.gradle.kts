@@ -46,9 +46,9 @@ gradlePlugin {
             id = "app.android.library"
             implementationClass = "AndroidLibraryConventionPlugin"
         }
-        register("androidDetekt") {
-            id = "app.android.detekt"
-            implementationClass = "AndroidDetektConventionPlugin"
+        register("detekt") {
+            id = "app.detekt"
+            implementationClass = "DetektConventionPlugin"
         }
     }
 }

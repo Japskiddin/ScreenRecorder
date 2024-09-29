@@ -70,4 +70,4 @@ detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 # Project internal convention plugins
 app-android-application = { id = "app.android.application", version = "unspecified" }
 app-android-library = { id = "app.android.library", version = "unspecified" }
-app-android-detekt = { id = "app.android.detekt", version = "unspecified" }
+app-detekt = { id = "app.detekt", version = "unspecified" }
