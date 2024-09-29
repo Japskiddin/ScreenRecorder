@@ -40,16 +40,15 @@ internal fun getRecordingInfo(context: Context): RecordingInfo {
     }
     val configuration = context.resources.configuration
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
+    @Suppress("DEPRECATION")
     val camcorderProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH)
-    val camera: CameraInfo = if (camcorderProfile != null) {
-        CameraInfo(
-            width = camcorderProfile.videoFrameWidth,
-            height = camcorderProfile.videoFrameHeight,
-            frameRate = camcorderProfile.videoFrameRate
-        )
-    } else {
-        CameraInfo(width = -1, height = -1, frameRate = 30)
-    }
+    val camera = CameraInfo(
+        width = camcorderProfile?.videoFrameWidth ?: -1,
+        height = camcorderProfile?.videoFrameHeight ?: -1,
+        frameRate = camcorderProfile?.videoFrameRate ?: 30
+    )
+
     return calculateRecordingInfo(
         display,
         isLandscape,
