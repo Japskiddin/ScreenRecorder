@@ -29,6 +29,7 @@ androidx-test-ext-junit = "1.2.1"
 androidx-text-espresso-core = "3.6.1"
 androidx-arch-core-testing = "2.2.0"
 
+vanniktech-maven-publish = "0.29.0"
 jreleaser = "1.13.1"
 
 [libraries]
@@ -66,6 +67,7 @@ android-test = { id = "com.android.test", version.ref = "agp" }
 jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 jreleaser = { id = "org.jreleaser", version.ref = "jreleaser" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
 
 # Project internal convention plugins
 app-android-application = { id = "app.android.application", version = "unspecified" }

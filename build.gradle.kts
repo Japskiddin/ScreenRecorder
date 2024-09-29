@@ -11,6 +11,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android) apply false
     alias(libs.plugins.jreleaser) apply false
     alias(libs.plugins.detekt) apply false
+    alias(libs.plugins.vanniktech.maven.publish) apply false
 }
 
 tasks.register("clean", Delete::class) {

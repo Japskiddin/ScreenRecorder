@@ -1,11 +1,11 @@
+import com.vanniktech.maven.publish.SonatypeHost
 import org.jetbrains.kotlin.gradle.dsl.ExplicitApiMode
-import org.jreleaser.model.Active
 
 plugins {
     alias(libs.plugins.app.android.library)
     alias(libs.plugins.app.detekt)
-    alias(libs.plugins.jreleaser)
-    id("maven-publish")
+    `maven-publish`
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
 kotlin {
@@ -14,6 +14,15 @@ kotlin {
 
 android {
     namespace = "io.github.japskiddin.screenrecorder"
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar() // Обязательно надо для удобства использования
+
+            // Javadoc отдельно публикуется только если нету исходников
+            // withJavadocJar()
+        }
+    }
 }
 
 dependencies {
@@ -21,103 +30,87 @@ dependencies {
     implementation(libs.androidx.core.ktx)
 }
 
-// Deploy
-
-android {
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
-}
-
-version = project.properties["VERSION_NAME"].toString()
-description = project.properties["POM_DESCRIPTION"].toString()
-
 publishing {
     publications {
         create<MavenPublication>("release") {
+            // Добавляем компоненты в публикацию
+            afterEvaluate {
+                from(components["release"])
+            }
+
             groupId = project.properties["GROUP"].toString()
             artifactId = project.properties["POM_ARTIFACT_ID"].toString()
+            version = project.properties["VERSION_NAME"].toString()
 
             pom {
-                name.set(project.properties["POM_NAME"].toString())
-                description.set(project.properties["POM_DESCRIPTION"].toString())
-                url.set("https://github.com/Japskiddin/ScreenRecorder")
-                issueManagement {
-                    url.set("https://github.com/Japskiddin/ScreenRecorder/issues")
-                }
+                name = project.properties["POM_NAME"].toString()
+                description = project.properties["POM_DESCRIPTION"].toString()
+                url = "https://github.com/Japskiddin/ScreenRecorder"
 
                 scm {
-                    url.set("https://github.com/Japskiddin/ScreenRecorder")
-                    connection.set("scm:git://github.com/Japskiddin/ScreenRecorder.git")
-                    developerConnection.set("scm:git://github.com/Japskiddin/ScreenRecorder.git")
+                    connection = "scm:git:git://github.com/Japskiddin/ScreenRecorder.git"
+                    developerConnection = "scm:git:ssh://github.com/Japskiddin/ScreenRecorder.git"
+                    url = "https://github.com/Japskiddin/ScreenRecorder"
+                }
+
+                ciManagement {
+                    system = "GitHub Actions"
+                    url = "https://github.com/Japskiddin/ScreenRecorder/actions"
+                }
+
+                issueManagement {
+                    system = "GitHub"
+                    url = "https://github.com/Japskiddin/ScreenRecorder/issues"
                 }
 
                 licenses {
                     license {
-                        name.set("The Apache Software License, Version 2.0")
-                        url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                        distribution.set("repo")
+                        name = "The Apache Software License, Version 2.0"
+                        url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                        distribution = "repo"
                     }
                 }
 
                 developers {
                     developer {
-                        id.set("Japskiddin")
-                        name.set("Nikita Lazarev")
-                        email.set("japskiddin@gmail.com")
+                        id = "Japskiddin"
+                        name = "Nikita Lazarev"
+                        email = "japskiddin@gmail.com"
                     }
-                }
-
-                afterEvaluate {
-                    from(components["release"])
                 }
             }
         }
     }
+
+    // Список репозиториев куда публикуются артефакты
     repositories {
-        maven {
-            setUrl(layout.buildDirectory.dir("staging-deploy"))
+        // mavenCentral() // Публикация в Maven Central делается через REST API с помошью отдельного плагина
+        mavenLocal() // Ищете файлы в директории ~/.m2/repository
+
+        // Репозиторий в build папке корня проекта
+        maven(url = uri(rootProject.layout.buildDirectory.file("maven-repo"))) {
+            name = "BuildDir"
         }
+
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Japskiddin/ScreenRecorder")
+            credentials {
+                username = project.properties["GITHUB_USERNAME"].toString()
+                password = project.properties["GITHUB_TOKEN"].toString()
+            }
+        }
+
+//        maven {
+//            setUrl(layout.buildDirectory.dir("staging-deploy"))
+//        }
     }
 }
 
-jreleaser {
-    project {
-        inceptionYear = "2024"
-        author("@Japskiddin")
-    }
-    gitRootSearch = true
-    signing {
-        active = Active.ALWAYS
-        armored = true
-        verify = true
-    }
-    release {
-        github {
-            skipTag = true
-            sign = true
-            branch = "main"
-            branchPush = "main"
-            overwrite = true
-        }
-    }
-    deploy {
-        maven {
-            mavenCentral.create("sonatype") {
-                active = Active.ALWAYS
-                url = "https://central.sonatype.com/api/v1/publisher"
-                stagingRepository(layout.buildDirectory.dir("staging-deploy").get().toString())
-                setAuthorization("Basic")
-                applyMavenCentralRules = false
-                sign = true
-                checksums = true
-                sourceJar = true
-                javadocJar = true
-                retryDelay = 60
-            }
-        }
-    }
+// Подробности как публиковать
+// https://vanniktech.github.io/gradle-maven-publish-plugin/central
+mavenPublishing {
+    // Публикация в https://central.sonatype.com/
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    signAllPublications()
 }
