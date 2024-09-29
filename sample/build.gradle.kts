@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.app.android.application)
+    alias(libs.plugins.app.detekt)
 }
 
 android {
@@ -40,29 +41,20 @@ android {
         }
     }
 
-    bundle {
-        language {
-            enableSplit = false
-        }
-    }
-
     buildFeatures {
         viewBinding = true
-        buildConfig = true
     }
 
     lint {
         abortOnError = false
     }
-
-    dependenciesInfo {
-        includeInApk = false
-        includeInBundle = false
-    }
 }
 
 dependencies {
+    implementation(libs.androidx.annotation)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.fragment)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.core)
     implementation(libs.androidx.core.ktx)
@@ -71,10 +63,5 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
 
     implementation(libs.material)
-
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.androidx.test.espresso.core)
-
-    implementation(project(":screenrecorder"))
+    implementation(projects.lib)
 }
