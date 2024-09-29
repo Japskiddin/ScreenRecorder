@@ -15,14 +15,14 @@ kotlin {
 android {
     namespace = "io.github.japskiddin.screenrecorder"
 
-    publishing {
-        singleVariant("release") {
-            withSourcesJar() // Обязательно надо для удобства использования
-
-            // Javadoc отдельно публикуется только если нету исходников
-            // withJavadocJar()
-        }
-    }
+//    publishing {
+//        singleVariant("release") {
+//            withSourcesJar() // Обязательно надо для удобства использования
+//
+//            // Javadoc отдельно публикуется только если нету исходников
+//            // withJavadocJar()
+//        }
+//    }
 }
 
 dependencies {
@@ -32,12 +32,7 @@ dependencies {
 
 publishing {
     publications {
-        create<MavenPublication>("release") {
-            // Добавляем компоненты в публикацию
-            afterEvaluate {
-                from(components["release"])
-            }
-
+        register<MavenPublication>("release") {
             groupId = project.properties["GROUP"].toString()
             artifactId = project.properties["POM_ARTIFACT_ID"].toString()
             version = project.properties["VERSION_NAME"].toString()
@@ -79,6 +74,11 @@ publishing {
                     }
                 }
             }
+
+            // Добавляем компоненты в публикацию
+            afterEvaluate {
+                from(components["release"])
+            }
         }
     }
 
@@ -100,10 +100,6 @@ publishing {
                 password = project.properties["GITHUB_TOKEN"].toString()
             }
         }
-
-//        maven {
-//            setUrl(layout.buildDirectory.dir("staging-deploy"))
-//        }
     }
 }
 
