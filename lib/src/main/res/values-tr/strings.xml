@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Ekranınız kaydediliyor</string>
-  <string name="stop_recording_notification_message">Kaydı durdurmak için aşağı sürükleyin</string>
-  <string name="err_screen_record">Ekran kaydı başlatılamadı</string>
-  <string name="stop_record">Kaydı durdur</string>
+    <string name="stop_recording_notification_title">Ekranınız kaydediliyor</string>
+    <string name="stop_recording_notification_message">Kaydı durdurmak için aşağı sürükleyin</string>
+    <string name="err_screen_record">Ekran kaydı başlatılamadı</string>
+    <string name="stop_record">Kaydı durdur</string>
 </resources>

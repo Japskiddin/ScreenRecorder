@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Merekam layar Anda</string>
-  <string name="stop_recording_notification_message">Tarik ke bawah untuk menghentikan perekaman</string>
-  <string name="err_screen_record">Gagal memulai perekaman layar</string>
-  <string name="stop_record">Hentikan rekaman</string>
+    <string name="stop_recording_notification_title">Merekam layar Anda</string>
+    <string name="stop_recording_notification_message">Tarik ke bawah untuk menghentikan perekaman</string>
+    <string name="err_screen_record">Gagal memulai perekaman layar</string>
+    <string name="stop_record">Hentikan rekaman</string>
 </resources>

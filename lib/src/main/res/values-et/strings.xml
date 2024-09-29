@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Ekraani salvestamine</string>
-  <string name="stop_recording_notification_message">Salvestamise peatamiseks lohistage alla</string>
-  <string name="err_screen_record">Ekraani salvestamise käivitamine ebaõnnestus</string>
-  <string name="stop_record">Peata salvestamine</string>
+    <string name="stop_recording_notification_title">Ekraani salvestamine</string>
+    <string name="stop_recording_notification_message">Salvestamise peatamiseks lohistage alla</string>
+    <string name="err_screen_record">Ekraani salvestamise käivitamine ebaõnnestus</string>
+    <string name="stop_record">Peata salvestamine</string>
 </resources>

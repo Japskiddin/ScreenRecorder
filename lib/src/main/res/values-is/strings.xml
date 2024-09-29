@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Tekur upp skjáinn þinn</string>
-  <string name="stop_recording_notification_message">Dragðu niður til að stöðva upptökuna</string>
-  <string name="err_screen_record">Mistókst að hefja skjáupptöku</string>
-  <string name="stop_record">Stöðva upptöku</string>
+    <string name="stop_recording_notification_title">Tekur upp skjáinn þinn</string>
+    <string name="stop_recording_notification_message">Dragðu niður til að stöðva upptökuna</string>
+    <string name="err_screen_record">Mistókst að hefja skjáupptöku</string>
+    <string name="stop_record">Stöðva upptöku</string>
 </resources>

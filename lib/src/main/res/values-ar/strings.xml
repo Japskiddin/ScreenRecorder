@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">تسجيل الشاشة الخاصة بك</string>
-  <string name="stop_recording_notification_message">اسحب لأسفل لإيقاف التسجيل</string>
-  <string name="err_screen_record">فشل في بدء تسجيل الشاشة</string>
-  <string name="stop_record">توقف عن التسجيل</string>
+    <string name="stop_recording_notification_title">تسجيل الشاشة الخاصة بك</string>
+    <string name="stop_recording_notification_message">اسحب لأسفل لإيقاف التسجيل</string>
+    <string name="err_screen_record">فشل في بدء تسجيل الشاشة</string>
+    <string name="stop_record">توقف عن التسجيل</string>
 </resources>

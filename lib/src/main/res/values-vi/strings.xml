@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Ghi lại màn hình của bạn</string>
-  <string name="stop_recording_notification_message">Kéo xuống để dừng ghi</string>
-  <string name="err_screen_record">Không thể bắt đầu ghi màn hình</string>
-  <string name="stop_record">Dừng ghi</string>
+    <string name="stop_recording_notification_title">Ghi lại màn hình của bạn</string>
+    <string name="stop_recording_notification_message">Kéo xuống để dừng ghi</string>
+    <string name="err_screen_record">Không thể bắt đầu ghi màn hình</string>
+    <string name="stop_record">Dừng ghi</string>
 </resources>

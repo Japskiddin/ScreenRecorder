@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Enregistrer votre écran</string>
-  <string name="stop_recording_notification_message">Faites glisser vers le bas pour arrêter l\'enregistrement</string>
-  <string name="err_screen_record">Échec du démarrage de l\'enregistrement d\'écran</string>
-  <string name="stop_record">Arrêter l\'enregistrement</string>
+    <string name="stop_recording_notification_title">Enregistrer votre écran</string>
+    <string name="stop_recording_notification_message">Faites glisser vers le bas pour arrêter l\'enregistrement</string>
+    <string name="err_screen_record">Échec du démarrage de l\'enregistrement d\'écran</string>
+    <string name="stop_record">Arrêter l\'enregistrement</string>
 </resources>

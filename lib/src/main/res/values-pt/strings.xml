@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Gravando sua tela</string>
-  <string name="stop_recording_notification_message">Arraste para baixo para interromper a gravação</string>
-  <string name="err_screen_record">Falha ao iniciar a gravação da tela</string>
-  <string name="stop_record">Parar gravação</string>
+    <string name="stop_recording_notification_title">Gravando sua tela</string>
+    <string name="stop_recording_notification_message">Arraste para baixo para interromper a gravação</string>
+    <string name="err_screen_record">Falha ao iniciar a gravação da tela</string>
+    <string name="stop_record">Parar gravação</string>
 </resources>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Uw scherm opnemen</string>
-  <string name="stop_recording_notification_message">Sleep omlaag om de opname te stoppen</string>
-  <string name="err_screen_record">Kan de schermopname niet starten</string>
-  <string name="stop_record">Record stoppen</string>
+    <string name="stop_recording_notification_title">Uw scherm opnemen</string>
+    <string name="stop_recording_notification_message">Sleep omlaag om de opname te stoppen</string>
+    <string name="err_screen_record">Kan de schermopname niet starten</string>
+    <string name="stop_record">Record stoppen</string>
 </resources>

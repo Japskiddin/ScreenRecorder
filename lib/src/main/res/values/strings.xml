@@ -1,6 +1,6 @@
 <resources>
-  <string name="stop_recording_notification_title">Recording your screen</string>
-  <string name="stop_recording_notification_message">Drag down to stop the recording</string>
-  <string name="err_screen_record">Failed to start screen record</string>
-  <string name="stop_record">Stop record</string>
+    <string name="stop_recording_notification_title">Recording your screen</string>
+    <string name="stop_recording_notification_message">Drag down to stop the recording</string>
+    <string name="err_screen_record">Failed to start screen record</string>
+    <string name="stop_record">Stop record</string>
 </resources>

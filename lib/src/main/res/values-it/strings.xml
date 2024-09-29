@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Registrazione dello schermo</string>
-  <string name="stop_recording_notification_message">Trascina verso il basso per interrompere la registrazione</string>
-  <string name="err_screen_record">Impossibile avviare la registrazione dello schermo</string>
-  <string name="stop_record">Interrompi la registrazione</string>
+    <string name="stop_recording_notification_title">Registrazione dello schermo</string>
+    <string name="stop_recording_notification_message">Trascina verso il basso per interrompere la registrazione</string>
+    <string name="err_screen_record">Impossibile avviare la registrazione dello schermo</string>
+    <string name="stop_record">Interrompi la registrazione</string>
 </resources>

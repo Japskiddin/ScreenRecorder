@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Запись вашего экрана</string>
-  <string name="stop_recording_notification_message">Сдвиньте вниз, чтобы остановить запись</string>
-  <string name="err_screen_record">Не удалось начать запись экрана</string>
-  <string name="stop_record">Остановить запись</string>
+    <string name="stop_recording_notification_title">Запись вашего экрана</string>
+    <string name="stop_recording_notification_message">Сдвиньте вниз, чтобы остановить запись</string>
+    <string name="err_screen_record">Не удалось начать запись экрана</string>
+    <string name="stop_record">Остановить запись</string>
 </resources>

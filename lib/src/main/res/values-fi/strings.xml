@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <string name="stop_recording_notification_title">Tallentaa näyttöäsi</string>
-  <string name="stop_recording_notification_message">Pysäytä tallennus vetämällä alas</string>
-  <string name="err_screen_record">Näytön tallennuksen aloittaminen epäonnistui</string>
-  <string name="stop_record">Lopeta tallennus</string>
+    <string name="stop_recording_notification_title">Tallentaa näyttöäsi</string>
+    <string name="stop_recording_notification_message">Pysäytä tallennus vetämällä alas</string>
+    <string name="err_screen_record">Näytön tallennuksen aloittaminen epäonnistui</string>
+    <string name="stop_record">Lopeta tallennus</string>
 </resources>
