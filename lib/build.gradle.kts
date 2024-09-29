@@ -15,14 +15,14 @@ kotlin {
 android {
     namespace = "io.github.japskiddin.screenrecorder"
 
-//    publishing {
-//        singleVariant("release") {
-//            withSourcesJar() // Обязательно надо для удобства использования
-//
-//            // Javadoc отдельно публикуется только если нету исходников
-//            // withJavadocJar()
-//        }
-//    }
+    publishing {
+        singleVariant("release") {
+            withSourcesJar() // Обязательно надо для удобства использования
+
+            // Javadoc отдельно публикуется только если нету исходников
+            // withJavadocJar()
+        }
+    }
 }
 
 dependencies {
