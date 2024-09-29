@@ -4,13 +4,16 @@ import com.android.build.api.dsl.ApplicationExtension
 
 internal fun ApplicationExtension.configureBuildTypes() {
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+        debug {
+            versionNameSuffix = " DEBUG"
         }
     }
 }
