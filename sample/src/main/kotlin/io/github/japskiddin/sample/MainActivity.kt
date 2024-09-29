@@ -98,9 +98,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun enableRecord() {
-        val animation = AlphaAnimation(1f, .1f).apply {
+        val animation = AlphaAnimation(ANIMATION_FROM_ALPHA, ANIMATION_TO_ALPHA).apply {
             interpolator = LinearInterpolator()
-            duration = 1000L
+            duration = ANIMATION_DURATION
             repeatMode = Animation.REVERSE
             repeatCount = Animation.INFINITE
         }
@@ -165,5 +165,11 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) ||
             super.onSupportNavigateUp()
+    }
+
+    private companion object {
+        const val ANIMATION_FROM_ALPHA = 1f
+        const val ANIMATION_TO_ALPHA = .1f
+        const val ANIMATION_DURATION = 1000L
     }
 }

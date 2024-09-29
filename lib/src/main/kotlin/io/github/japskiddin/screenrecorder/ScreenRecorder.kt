@@ -105,7 +105,10 @@ public class ScreenRecorder(context: Context) {
                 putExtra(ScreenRecorderService.EXTRA_BUNDLED_LISTENER, receiver)
             }
             context.startService(service)
-        } catch (e: Exception) {
+        } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            if (BuildConfig.DEBUG) {
+                Log.e(TAG, e.stackTraceToString())
+            }
             recorderListener?.recorderOnError(R.string.err_screen_record)
         }
     }

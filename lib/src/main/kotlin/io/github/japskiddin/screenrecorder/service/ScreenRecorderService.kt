@@ -31,6 +31,7 @@ import io.github.japskiddin.screenrecorder.utils.getRecordingInfo
 import io.github.japskiddin.screenrecorder.utils.toBundle
 import java.io.File
 
+@Suppress("TooManyFunctions")
 internal class ScreenRecorderService : Service() {
     private var mediaProjection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
@@ -102,7 +103,7 @@ internal class ScreenRecorderService : Service() {
 
             try {
                 initMediaRecorder()
-            } catch (e: Exception) {
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 sendError(GENERAL_ERROR, e)
             }
 
@@ -110,13 +111,13 @@ internal class ScreenRecorderService : Service() {
                 if (resultCode != null && resultData != null) {
                     initMediaProjection(resultCode, resultData)
                 }
-            } catch (e: Exception) {
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 sendError(GENERAL_ERROR, e)
             }
 
             try {
                 initVirtualDisplay()
-            } catch (e: Exception) {
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 sendError(GENERAL_ERROR, e)
             }
 
@@ -126,7 +127,7 @@ internal class ScreenRecorderService : Service() {
                     Activity.RESULT_OK,
                     mapOf(EXTRA_ON_MESSAGE_KEY to ON_START)
                 )
-            } catch (e: Exception) {
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 sendError(SETTINGS_ERROR, e)
             }
         } else {
@@ -218,8 +219,8 @@ internal class ScreenRecorderService : Service() {
             setVideoEncoder(MediaRecorder.VideoEncoder.H264)
             setOutputFile(filePath)
             setVideoSize(recordingInfo.width, recordingInfo.height)
-            setVideoEncodingBitRate(512 * 3000)
-            setVideoFrameRate(30)
+            setVideoEncodingBitRate(VIDEO_ENCODING_BITRATE)
+            setVideoFrameRate(VIDEO_FRAME_RATE)
             prepare()
         }
     }
@@ -295,5 +296,8 @@ internal class ScreenRecorderService : Service() {
         const val SECURITY_ERROR: Int = -102
         const val ON_START: Int = 100
         const val ON_COMPLETE: Int = 101
+
+        private const val VIDEO_ENCODING_BITRATE = 512 * 3000
+        private const val VIDEO_FRAME_RATE = 30
     }
 }

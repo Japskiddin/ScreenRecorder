@@ -57,15 +57,18 @@ internal fun getRecordingInfo(context: Context): RecordingInfo {
     )
 }
 
+@Suppress("ReturnCount")
 private fun calculateRecordingInfo(
     display: DisplayInfo,
     isLandscapeDevice: Boolean,
     camera: CameraInfo,
-    sizePercentage: Int = 100,
+    sizePercentage: Int = 100
 ): RecordingInfo {
+    @Suppress("MagicNumber")
+    val recordingInfoSizeScale = 100
     // Scale the display size before any maximum size calculations.
-    val width = display.width * sizePercentage / 100
-    val height = display.height * sizePercentage / 100
+    val width = display.width * sizePercentage / recordingInfoSizeScale
+    val height = display.height * sizePercentage / recordingInfoSizeScale
     if (camera.width == -1 && camera.height == -1) {
         // No cameras. Fall back to the display size.
         return RecordingInfo(width, height, camera.frameRate, display.density)
@@ -93,4 +96,5 @@ private fun calculateRecordingInfo(
     return RecordingInfo(frameWidth, frameHeight, camera.frameRate, display.density)
 }
 
+@Suppress("SpreadOperator")
 internal fun Map<String, Any?>.toBundle(): Bundle = bundleOf(*this.toList().toTypedArray())
