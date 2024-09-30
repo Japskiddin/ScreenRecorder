@@ -50,5 +50,9 @@ gradlePlugin {
             id = "app.detekt"
             implementationClass = "DetektConventionPlugin"
         }
+        register("mavenPublish") {
+            id = "app.maven.publish"
+            implementationClass = "MavenPublishConventionPlugin"
+        }
     }
 }
