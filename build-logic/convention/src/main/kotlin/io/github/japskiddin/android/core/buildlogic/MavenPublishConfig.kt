@@ -25,49 +25,49 @@ internal fun Project.configureMavenPublish(
     with(publishExt) {
         publications {
             create("release", MavenPublication::class.java) {
+                // Добавляем компоненты в публикацию
                 afterEvaluate {
-                    // Добавляем компоненты в публикацию
                     from(components["release"])
                 }
 
                 groupId = project.properties["GROUP"].toString()
-                artifactId = project.properties["POM_ARTIFACT_ID"].toString()
+                artifactId = project.properties["ARTIFACT_ID"].toString()
                 version = project.properties["VERSION_NAME"].toString()
 
                 pom {
                     name = project.properties["POM_NAME"].toString()
                     description = project.properties["POM_DESCRIPTION"].toString()
-                    url = "https://github.com/Japskiddin/ScreenRecorder"
+                    url = project.properties["POM_URL"].toString()
 
                     scm {
-                        connection = "scm:git:git://github.com/Japskiddin/ScreenRecorder.git"
-                        developerConnection = "scm:git:ssh://github.com/Japskiddin/ScreenRecorder.git"
-                        url = "https://github.com/Japskiddin/ScreenRecorder"
+                        connection = project.properties["POM_SCM_CONNECTION"].toString()
+                        developerConnection = project.properties["POM_SCM_DEV_CONNECTION"].toString()
+                        url = project.properties["POM_SCM_URL"].toString()
                     }
 
                     ciManagement {
-                        system = "GitHub Actions"
-                        url = "https://github.com/Japskiddin/ScreenRecorder/actions"
+                        system = project.properties["POM_CI_SYSTEM"].toString()
+                        url = project.properties["POM_CI_URL"].toString()
                     }
 
                     issueManagement {
-                        system = "GitHub"
-                        url = "https://github.com/Japskiddin/ScreenRecorder/issues"
+                        system = project.properties["POM_ISSUE_SYSTEM"].toString()
+                        url = project.properties["POM_ISSUE_URL"].toString()
                     }
 
                     licenses {
                         license {
-                            name = "The Apache Software License, Version 2.0"
-                            url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                            distribution = "repo"
+                            name = project.properties["POM_LICENSE_NAME"].toString()
+                            url = project.properties["POM_LICENSE_URL"].toString()
+                            distribution = project.properties["POM_LICENSE_DIST"].toString()
                         }
                     }
 
                     developers {
                         developer {
-                            id = "Japskiddin"
-                            name = "Nikita Lazarev"
-                            email = "japskiddin@gmail.com"
+                            id = project.properties["POM_DEVELOPER_ID"].toString()
+                            name = project.properties["POM_DEVELOPER_NAME"].toString()
+                            email = project.properties["POM_DEVELOPER_EMAIL"].toString()
                         }
                     }
                 }

@@ -1,7 +1,6 @@
 import com.android.build.api.dsl.LibraryExtension
 import io.github.japskiddin.android.core.buildlogic.androidConfig
 import io.github.japskiddin.android.core.buildlogic.configureMavenPublish
-import io.github.japskiddin.android.core.buildlogic.configureSingleVariant
 import io.github.japskiddin.android.core.buildlogic.plugins
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,7 +16,7 @@ class MavenPublishConventionPlugin : Plugin<Project> {
 
             androidConfig {
                 this as LibraryExtension
-                configureSingleVariant()
+//                configureSingleVariant()
             }
 
             extensions.configure<PublishingExtension> {
