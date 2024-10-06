@@ -9,6 +9,7 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.maven
 
 internal fun LibraryExtension.configureSingleVariant() {
+    // На Android Gradle Plugin 8.7.0 вариант для публикации создаётся автоматически
     publishing {
         singleVariant("release") {
             withSourcesJar() // Обязательно надо для удобства использования

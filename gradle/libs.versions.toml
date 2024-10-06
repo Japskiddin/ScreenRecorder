@@ -3,20 +3,20 @@ androidSdk-min = "21"
 androidSdk-compile = "35"
 androidSdk-target = "35"
 
-agp = "8.6.1"
+agp = "8.7.0"
 kotlin = "2.0.20"
 
 jvm = "17"
 
-android-tools = "31.6.1"
+android-tools = "31.7.0"
 
 androidx-annotation = "1.8.2"
 androidx-core = "1.13.1"
 androidx-appcompat = "1.7.0"
 androidx-activity = "1.9.2"
-androidx-fragment = "1.8.3"
+androidx-fragment = "1.8.4"
 androidx-constraintlayout = "2.1.4"
-androidx-navigation = "2.8.1"
+androidx-navigation = "2.8.2"
 
 bundletool = "1.17.1"
 material = "1.12.0"
