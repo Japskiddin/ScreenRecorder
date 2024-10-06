@@ -42,17 +42,13 @@ jobs:
           name: sample-debug
           path: sample/build/outputs/apk/debug/**.apk
 
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
-
       - name: Create release and upload debug APK
         uses: underwindfall/create-release-with-debugapk@v2.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GPR_API_KEY }}
         with:
-          tag_name: ${{ steps.get_version.outputs.VERSION }}
-          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           asset_path: sample/build/outputs/apk/debug/sample-debug.apk
           asset_name: Sample.apk
           asset_content_type: application/zip
