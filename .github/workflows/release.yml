@@ -2,6 +2,11 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish'
+        required: true
+        default: '1.0.0'
 
 jobs:
   build:
@@ -47,8 +52,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GPR_API_KEY }}
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ inputs.version }}
+          release_name: Release ${{ inputs.version }}
           asset_path: sample/build/outputs/apk/debug/sample-debug.apk
           asset_name: Sample.apk
           asset_content_type: application/zip
