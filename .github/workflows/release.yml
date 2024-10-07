@@ -24,7 +24,7 @@ jobs:
           touch $HOME/.gradle/gradle.properties
           echo signing.keyId="$GPG_SIGN_KEY_ID" >> $HOME/.gradle/gradle.properties
           echo signing.password="$GPG_SIGN_KEY_PASSWORD" >> $HOME/.gradle/gradle.properties
-          echo signing.secretKeyRingFile="$HOME\\.gnupg\\secring.gpg" >> $HOME/.gradle/gradle.properties
+          echo signing.secretKeyRingFile="$HOME/.gnupg/secring.gpg" >> $HOME/.gradle/gradle.properties
           echo $GPG_SIGN_SECRET_KEY_RING_FILE | base64 --decode > $HOME/.gnupg/secring.gpg
         shell: bash
 
