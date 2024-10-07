@@ -7,6 +7,9 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.assign
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.maven
+import org.jetbrains.kotlin.konan.properties.hasProperty
+import java.io.FileInputStream
+import java.util.*
 
 internal fun LibraryExtension.configureSingleVariant() {
     // На Android Gradle Plugin 8.7.0 вариант для публикации создаётся автоматически
@@ -24,6 +27,13 @@ internal fun Project.configureMavenPublish(
     publishExt: PublishingExtension
 ) {
     with(publishExt) {
+        val propertiesName = "github.properties"
+        val githubProperties = Properties().apply {
+            if (rootProject.file(propertiesName).exists()) {
+                load(FileInputStream(rootProject.file(propertiesName)))
+            }
+        }
+
         publications {
             create("release", MavenPublication::class.java) {
                 // Добавляем компоненты в публикацию
@@ -77,7 +87,6 @@ internal fun Project.configureMavenPublish(
 
         // Список репозиториев куда публикуются артефакты
         repositories {
-            // mavenCentral() // Публикация в Maven Central делается через REST API с помошью отдельного плагина
             mavenLocal() // Ищете файлы в директории ~/.m2/repository
 
             // Репозиторий в build папке корня проекта
@@ -85,12 +94,21 @@ internal fun Project.configureMavenPublish(
                 name = "BuildDir"
             }
 
+            // Репозиторий в GitHub Packages
             maven {
                 name = "GitHubPackages"
                 url = uri("https://maven.pkg.github.com/Japskiddin/ScreenRecorder")
                 credentials {
-                    username = project.properties["GITHUB_USERNAME"].toString()
-                    password = project.properties["GITHUB_TOKEN"].toString()
+                    username = if (githubProperties.hasProperty("GITHUB_USERNAME")) {
+                        githubProperties.getProperty("GITHUB_USERNAME")
+                    } else {
+                        System.getenv("GPR_USER")
+                    }
+                    password = if (githubProperties.hasProperty("GITHUB_TOKEN")) {
+                        githubProperties.getProperty("GITHUB_TOKEN")
+                    } else {
+                        System.getenv("GPR_API_KEY")
+                    }
                 }
             }
         }

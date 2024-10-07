@@ -13,22 +13,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create keystore and environment variables
+      - name: Create GPG keystore
         env:
-          GPG_SIGN_KEY_ID: ${{ secrets.GPG_SIGN_KEY_ID }}
-          GPG_SIGN_KEY_PASSWORD: ${{ secrets.GPG_SIGN_KEY_PASSWORD }}
           GPG_SIGN_SECRET_KEY_RING_FILE: ${{ secrets.GPG_SIGN_SECRET_KEY_RING_FILE }}
         run: |
           mkdir -p $HOME/.gnupg
+          echo $GPG_SIGN_SECRET_KEY_RING_FILE | base64 --decode > $HOME/.gnupg/secring.gpg
+        shell: bash
+
+      - name: Create GPG environment variables
+        env:
+          GPG_SIGN_KEY_ID: ${{ secrets.GPG_SIGN_KEY_ID }}
+          GPG_SIGN_KEY_PASSWORD: ${{ secrets.GPG_SIGN_KEY_PASSWORD }}
+        run: |
           mkdir -p $HOME/.gradle
           touch $HOME/.gradle/gradle.properties
           echo signing.keyId="$GPG_SIGN_KEY_ID" >> $HOME/.gradle/gradle.properties
           echo signing.password="$GPG_SIGN_KEY_PASSWORD" >> $HOME/.gradle/gradle.properties
           echo signing.secretKeyRingFile="$HOME/.gnupg/secring.gpg" >> $HOME/.gradle/gradle.properties
-          echo $GPG_SIGN_SECRET_KEY_RING_FILE | base64 --decode > $HOME/.gnupg/secring.gpg
         shell: bash
 
-      - name: Make GitHub properties file
+      - name: Create GitHub properties file
         env:
           GPR_USER: ${{ github.actor }}
           GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
